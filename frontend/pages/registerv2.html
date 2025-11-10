@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - WorkSide</title>
 </head>
+
 <body>
     <h1>Registro de Usuarios</h1>
     <form id="registerForm" enctype="multipart/form-data">
@@ -19,12 +21,88 @@
 
             <label>Rol: </label>
             <select name="role" id="role" required>
+                <option value="">Seleccione</option>
                 <option value="ofertante">Ofertante</option>
                 <option value="demandante">Demandante</option>
                 <option value="adminEvento">adminEvento</option>
-                <opction value="adminSistema">adminSistema</option>
+                <option value="adminSistema">adminSistema</option>
             </select>
         </fieldset>
+
+        <fieldset>
+            <legend>Datos de la empresa</legend>
+
+            <label>Nombre empresa:</label>
+            <input type="text" name="nombreEmpresa" required><br>
+
+            <label>Logo empresa (Img):</label>
+            <input type="file" name="logoEmpresa" accept="image/*"><br>
+
+            <label>Sector:</label>
+            <select name="sector" id="sector" required>
+                <option value="">Seleccione</option>
+                <option value="Agroalimentos">Agroalimentos</option>
+                <option value="Turismo">Turismo</option>
+                <option value="TIC">TIC</option>
+                <option value="Manufactura">Manufactura</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Otro">Otro</option>
+            </select>
+            <input type="text" name="sectorOtro" id="sectorOtro" placeholder="Indicar otro sector"
+                style="display:none;"><br>
+
+            <label>¿La empresa està formalizada?</label>
+            <select name="formalizada" id="formalizada">
+                <option value="">Seleccione</option>
+                <option value="true">Si</option>
+                <option value="false">No</option>
+            </select>
+
+            <!--Si NO Formalizada-->
+            <div id="noFormalizada">
+                <fieldset>
+                    <legend>No formalizada</legend>
+                    <label>Rut provisional: </label>
+                    <input type="text" name="rutProvisional" id="rutProvisional"><br>
+
+                    <label>Rut provisional (PDF):</label>
+                    <input type="file" name="rutProvisionalFile" id="rutaProvisionalFile" accept="application/pdf"><br>
+
+                    <label>Comprobante matricula (PDF): </label>
+                    <input type="file" name="comprobanteMatricula" id="comprobanteMatricula"
+                        accept="application/pdf"><br>
+
+                    <label>Cedula del solicitante (PDF): </label>
+                    <input type="file" name="cedulaSolicitanteFile" id="cedulaSolicitante" accept="application/pdf"><br>
+                </fieldset>
+            </div>
+
+            <div id="Formalizada">
+                <fieldset>
+                    <legend>Formalizada</legend>
+                    <label>Nit: </label>
+                    <input type="text" name="nit" id="nit"><br>
+
+                    <label>Rut (PDF): </label>
+                    <input type="file" name="rutFile" id="rutFile"><br>
+
+                    <label>Certificado de existencia: </label>
+                    <input type="file" name="certificadoExistenciaFile" id="certificadoExistenciaFile"><br>
+
+                    <label>Cedula del representante:</label>
+                    <input type="file" name="cedulaRepresntanteFile" id="cedulaRepresntanteFile"><br>
+                </fieldset>
+            </div>
+        </fieldset>
+
+        <div id="datosContacto">
+            <fieldset>
+                <legend>Datos de contacto</legend>
+
+                
+            </fieldset>
+        </div>
     </form>
 </body>
+
 </html>
