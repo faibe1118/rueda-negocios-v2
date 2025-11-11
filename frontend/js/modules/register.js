@@ -1,3 +1,5 @@
+console.log("✅ register.js cargado correctamente");
+
 // === register.js ===
 
 // Esperar a que el DOM cargue
