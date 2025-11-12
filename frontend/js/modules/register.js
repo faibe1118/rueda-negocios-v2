@@ -77,15 +77,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Aquí puedes enviar los datos al servidor
         console.log('Formulario válido para rol:', rolSeleccionado);
         console.log('Datos del formulario:', Object.fromEntries(formData));
 
-        // Ejemplo de envío (descomentar cuando tengas el endpoint)
-        // enviarDatos(formData);
-
-        alert('Registro exitoso para rol: ' + rolSeleccionado);
+        // ✅ Aquí realmente se envía al backend
+        enviarDatos(formData);
     });
+
 
     /**
      * Oculta todos los fieldsets excepto las credenciales
