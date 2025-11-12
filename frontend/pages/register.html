@@ -5,6 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - WorkSide</title>
+    <style>
+        /* Estilos básicos para mejorar la visualización */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        fieldset {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        legend {
+            font-weight: bold;
+            padding: 0 10px;
+        }
+        label {
+            display: inline-block;
+            margin: 10px 0 5px 0;
+            font-weight: 500;
+        }
+        input, select {
+            margin: 5px 0;
+            padding: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 
 <body>
@@ -24,22 +68,22 @@
                 <option value="">Seleccione</option>
                 <option value="ofertante">Ofertante</option>
                 <option value="demandante">Demandante</option>
-                <option value="adminEvento">adminEvento</option>
-                <option value="adminSistema">adminSistema</option>
+                <option value="adminEvento">Admin Evento</option>
+                <option value="adminSistema">Admin Sistema</option>
             </select>
         </fieldset>
 
-        <fieldset>
+        <fieldset style="display: none;">
             <legend>Datos de la empresa</legend>
 
             <label>Nombre empresa:</label>
-            <input type="text" name="nombreEmpresa" required><br>
+            <input type="text" name="nombreEmpresa"><br>
 
             <label>Logo empresa (Img):</label>
             <input type="file" name="logoEmpresa" accept="image/*"><br>
 
             <label>Sector:</label>
-            <select name="sector" id="sector" required>
+            <select name="sector" id="sector">
                 <option value="">Seleccione</option>
                 <option value="Agroalimentos">Agroalimentos</option>
                 <option value="Turismo">Turismo</option>
@@ -54,12 +98,12 @@
             <label>¿La empresa está formalizada?</label>
             <select name="formalizada" id="formalizada">
                 <option value="">Seleccione</option>
-                <option value="true">Si</option>
+                <option value="true">Sí</option>
                 <option value="false">No</option>
             </select>
 
             <!--Si NO Formalizada-->
-            <div id="noFormalizada">
+            <div id="noFormalizada" style="display: none;">
                 <fieldset>
                     <legend>No formalizada</legend>
                     <label>Rut provisional: </label>
@@ -68,16 +112,16 @@
                     <label>Rut provisional (PDF):</label>
                     <input type="file" name="rutProvisionalFile" id="rutProvisionalFile" accept="application/pdf"><br>
 
-                    <label>Comprobante matricula (PDF): </label>
+                    <label>Comprobante matrícula (PDF): </label>
                     <input type="file" name="comprobanteMatricula" id="comprobanteMatricula"
                         accept="application/pdf"><br>
 
-                    <label>Cedula del solicitante (PDF): </label>
+                    <label>Cédula del solicitante (PDF): </label>
                     <input type="file" name="cedulaSolicitanteFile" id="cedulaSolicitante" accept="application/pdf"><br>
                 </fieldset>
             </div>
 
-            <div id="Formalizada">
+            <div id="Formalizada" style="display: none;">
                 <fieldset>
                     <legend>Formalizada</legend>
                     <label>Nit: </label>
@@ -89,31 +133,31 @@
                     <label>Certificado de existencia: </label>
                     <input type="file" name="certificadoExistenciaFile" id="certificadoExistenciaFile" accept="application/pdf"><br>
 
-                    <label>Cedula del representante:</label>
+                    <label>Cédula del representante:</label>
                     <input type="file" name="cedulaRepresentanteFile" id="cedulaRepresentanteFile" accept="application/pdf"><br>
                 </fieldset>
             </div>
         </fieldset>
 
-        <div id="datosContacto">
+        <div id="datosContacto" style="display: none;">
             <fieldset>
                 <legend>Datos de contacto</legend>
 
                 <label>Correo de Contacto: </label>
-                <input type="text" name="correoContacto" id="correoContacto"><br>
+                <input type="email" name="correoContacto" id="correoContacto"><br>
 
-                <label>Telefono: </label>
-                <input type="text" name="telefono" id="telefono"><br>
+                <label>Teléfono: </label>
+                <input type="tel" name="telefono" id="telefono"><br>
 
-                <label>direccion: </label>
+                <label>Dirección: </label>
                 <input type="text" name="direccion" id="direccion"><br>
 
                 <label>Redes Sociales: </label>
-                <input type="text" name="redesSociales" id="redesSociales"><br>
+                <input type="text" name="redesSociales" id="redesSociales" placeholder="Ej: @miempresa"><br>
             </fieldset>
         </div>
 
-        <fieldset>
+        <fieldset style="display: none;">
             <legend>Representante</legend>
 
             <label>Nombre: </label>
@@ -126,14 +170,14 @@
             <input type="text" name="cargo" id="cargo">
         </fieldset>
 
-        <fieldset>
-            <legend>Catalogos</legend>
+        <fieldset style="display: none;">
+            <legend>Catálogos</legend>
 
-            <label>Catalogo (Ofertante): </label>
+            <label>Catálogo (Ofertante): </label>
             <input type="file" name="catalogoFile" id="catalogoFile" accept="application/pdf"><br>
 
             <label>Necesidades (Demandante): </label>
-            <input type="file" name="NecesidadesFile" id="necesidadesFile" accept="application/pdf"><br>
+            <input type="file" name="necesidadesFile" id="necesidadesFile" accept="application/pdf"><br>
         </fieldset>
 
         <label>
