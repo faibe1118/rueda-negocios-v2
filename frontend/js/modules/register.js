@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Función para enviar datos al servidor (ejemplo)
      */
     function enviarDatos(formData) {
-        fetch('http://localhost:4000/api/users/register', {
+        fetch('http://127.0.0.1:4000/api/users/register', {
             method: 'POST',
             body: formData
         })
