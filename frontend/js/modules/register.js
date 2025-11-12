@@ -8,16 +8,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const formalizadaSelect = document.getElementById('formalizada');
     const noFormalizadaDiv = document.getElementById('noFormalizada');
     const formalizadaDiv = document.getElementById('Formalizada');
-    const datosEmpresaFieldset = document.querySelector('fieldset:nth-of-type(2)');
-    const datosContactoDiv = document.getElementById('datosContacto');
-    const representanteFieldset = document.querySelector('fieldset legend:contains("Representante")');
-    const catalogosFieldset = document.querySelector('fieldset:last-of-type');
     const registerForm = document.getElementById('registerForm');
-
-    // Obtener fieldset de representante correctamente
-    const representanteFieldsetElement = Array.from(document.querySelectorAll('fieldset')).find(
+    
+    // Obtener fieldsets correctamente
+    const allFieldsets = Array.from(document.querySelectorAll('fieldset'));
+    const datosEmpresaFieldset = allFieldsets.find(
+        fs => fs.querySelector('legend')?.textContent.trim() === 'Datos de la empresa'
+    );
+    const representanteFieldsetElement = allFieldsets.find(
         fs => fs.querySelector('legend')?.textContent.trim() === 'Representante'
     );
+    const catalogosFieldset = allFieldsets.find(
+        fs => fs.querySelector('legend')?.textContent.trim() === 'Catálogos'
+    );
+    const datosContactoDiv = document.getElementById('datosContacto');
 
     // Inicializar: ocultar todo excepto credenciales
     ocultarTodoExceptoCredenciales();
