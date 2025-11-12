@@ -1,13 +1,6 @@
-console.log("✅ register.js cargado correctamente");
-
-// === register.js ===
-
-// Esperar a que el DOM cargue
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ register.js cargado correctamente");
 
-    const form = document.getElementById("registerForm");
-
-    // Elementos clave
     const roleSelect = document.getElementById("role");
     const formalizadaSelect = document.getElementById("formalizada");
     const sectorSelect = document.getElementById("sector");
@@ -15,94 +8,96 @@ document.addEventListener("DOMContentLoaded", () => {
     const sectorOtroInput = document.getElementById("sectorOtro");
     const formalizadaDiv = document.getElementById("Formalizada");
     const noFormalizadaDiv = document.getElementById("noFormalizada");
-    const catalogoFile = document.getElementById("catalogoFile");
-    const necesidadesFile = document.getElementById("necesidadesFile");
 
-    // Ocultar secciones al inicio
-    formalizadaDiv.style.display = "none";
-    noFormalizadaDiv.style.display = "none";
-    catalogoFile.closest("fieldset").style.display = "none"; // Ocultar catálogo inicialmente
+    const datosEmpresa = document.querySelector("fieldset legend:textEquals('Datos de la empresa')")?.closest("fieldset") || document.querySelector("fieldset:nth-of-type(2)");
+    const datosContacto = document.getElementById("datosContacto");
+    const representante = [...document.querySelectorAll("fieldset legend")].find(el => el.textContent.includes("Representante"))?.closest("fieldset");
+    const catalogos = [...document.querySelectorAll("fieldset legend")].find(el => el.textContent.includes("Catalogos"))?.closest("fieldset");
 
-    // === Cambios según el sector ===
+    // 🔧 Helper para ocultar o mostrar
+    const mostrar = (el) => el && (el.style.display = "block");
+    const ocultar = (el) => el && (el.style.display = "none");
+
+    // Inicializar visibilidad
+    ocultar(formalizadaDiv);
+    ocultar(noFormalizadaDiv);
+    ocultar(sectorOtroInput);
+    ocultar(catalogos);
+
+    // 🎯 Cambio en "Sector"
     sectorSelect.addEventListener("change", () => {
-        if (sectorSelect.value === "Otro") {
-            sectorOtroInput.style.display = "block";
-        } else {
-            sectorOtroInput.style.display = "none";
-            sectorOtroInput.value = "";
-        }
+        if (sectorSelect.value === "Otro") mostrar(sectorOtroInput);
+        else ocultar(sectorOtroInput);
     });
 
-    // === Cambios según formalización ===
+    // 🎯 Cambio en "Formalizada"
     formalizadaSelect.addEventListener("change", () => {
         if (formalizadaSelect.value === "true") {
-            formalizadaDiv.style.display = "block";
-            noFormalizadaDiv.style.display = "none";
+            mostrar(formalizadaDiv);
+            ocultar(noFormalizadaDiv);
         } else if (formalizadaSelect.value === "false") {
-            formalizadaDiv.style.display = "none";
-            noFormalizadaDiv.style.display = "block";
+            mostrar(noFormalizadaDiv);
+            ocultar(formalizadaDiv);
         } else {
-            formalizadaDiv.style.display = "none";
-            noFormalizadaDiv.style.display = "none";
+            ocultar(formalizadaDiv);
+            ocultar(noFormalizadaDiv);
         }
     });
 
-    // === Cambios según el rol ===
+    // 🎯 Cambio en "Rol"
     roleSelect.addEventListener("change", () => {
         const role = roleSelect.value;
 
-        // Mostrar catálogo/needs según el rol
-        if (role === "ofertante") {
-            catalogoFile.closest("fieldset").style.display = "block";
-            catalogoFile.parentElement.style.display = "block";
-            necesidadesFile.parentElement.style.display = "none";
-        } else if (role === "demandante") {
-            catalogoFile.closest("fieldset").style.display = "block";
-            catalogoFile.parentElement.style.display = "none";
-            necesidadesFile.parentElement.style.display = "block";
-        } else if (role === "adminEvento") {
-            catalogoFile.closest("fieldset").style.display = "none"; // no muestra catálogo/needs
-        } else if (role === "adminSistema") {
-            catalogoFile.closest("fieldset").style.display = "none";
-            document.getElementById("datosContacto").style.display = "none";
-            // Ocultar campo de Representante
-            const repLegend = [...document.querySelectorAll("fieldset legend")].find(el => el.textContent.includes("Representante"));
-            if (repLegend) repLegend.closest("fieldset").style.display = "none";
+        // Siempre ocultar todo lo variable al inicio
+        ocultar(datosEmpresa);
+        ocultar(datosContacto);
+        ocultar(representante);
+        ocultar(catalogos);
 
-            // Ocultar campo de Datos de la empresa
-            const empresaLegend = [...document.querySelectorAll("fieldset legend")].find(el => el.textContent.includes("Datos de la empresa"));
-            if (empresaLegend) empresaLegend.closest("fieldset").style.display = "none";
+        const catalogoFile = document.getElementById("catalogoFile");
+        const necesidadesFile = document.getElementById("necesidadesFile");
 
-        } else {
-            catalogoFile.closest("fieldset").style.display = "none";
+        // reset catálogo y necesidades
+        catalogoFile.closest("label").style.display = "none";
+        necesidadesFile.closest("label").style.display = "none";
+
+        switch (role) {
+            case "adminSistema":
+                // Solo credenciales, todo oculto
+                break;
+
+            case "adminEvento":
+                mostrar(datosEmpresa);
+                mostrar(datosContacto);
+                mostrar(representante);
+                // sin catálogos
+                break;
+
+            case "ofertante":
+                mostrar(datosEmpresa);
+                mostrar(datosContacto);
+                mostrar(representante);
+                mostrar(catalogos);
+                catalogoFile.closest("label").style.display = "block";
+                break;
+
+            case "demandante":
+                mostrar(datosEmpresa);
+                mostrar(datosContacto);
+                mostrar(representante);
+                mostrar(catalogos);
+                necesidadesFile.closest("label").style.display = "block";
+                break;
+
+            default:
+                // Si no hay selección
+                ocultar(datosEmpresa);
+                ocultar(datosContacto);
+                ocultar(representante);
+                ocultar(catalogos);
+                break;
         }
     });
 
-    // === Envío del formulario ===
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(form);
-
-        try {
-            const response = await fetch("http://localhost:4000/api/users/register", {
-                method: "POST",
-                body: formData,
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert("✅ Registro exitoso");
-                console.log("Usuario registrado:", data);
-                form.reset();
-            } else {
-                alert("❌ Error: " + (data.message || "No se pudo registrar"));
-                console.error(data);
-            }
-        } catch (error) {
-            console.error("Error al registrar:", error);
-            alert("Error al conectar con el servidor");
-        }
-    });
+    console.log("✅ DOM cargado y listeners activos");
 });
