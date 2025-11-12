@@ -13,6 +13,16 @@ const generateToken = (user) => {
 // 📌 Registro de nuevo usuario
 exports.registerUser = async (req, res) => {
     try {
+        // ✅ Asegurar que req.body exista
+        if (!req.body) req.body = {};
+
+        // ✅ Convertir checkbox "on" → true o false
+        if (req.body.aceptaTerminos === 'on') {
+            req.body.aceptaTerminos = true;
+        } else {
+            req.body.aceptaTerminos = false;
+        }
+
         const {
             email,
             password,
@@ -58,7 +68,6 @@ exports.registerUser = async (req, res) => {
             aceptaTerminos
         });
 
-        // Generar token
         const token = generateToken(newUser);
 
         res.status(201).json({
@@ -71,6 +80,7 @@ exports.registerUser = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
 
 // 📌 Inicio de sesión
 exports.loginUser = async (req, res) => {
