@@ -1,44 +1,24 @@
-// backend/middleware/upload.js
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const multer = require('multer');
+const path = require('path');
 
-// === CONFIGURAR ALMACENAMIENTO ===
+// Configuración del almacenamiento
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        let folder = "uploads/otros"; // carpeta por defecto
-
-        // Clasificar por tipo de archivo
-        if (file.fieldname.includes("logo")) folder = "uploads/logos";
-        else if (file.mimetype === "application/pdf") folder = "uploads/docs";
-
-        // Crear carpeta si no existe
-        const dir = path.join(__dirname, "..", folder);
-        fs.mkdirSync(dir, { recursive: true });
-
-        cb(null, dir);
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../uploads')); // carpeta donde se guardan archivos
     },
-    filename: function (req, file, cb) {
-        const uniqueName = `${Date.now()}-${file.originalname}`;
-        cb(null, uniqueName);
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
     },
 });
 
-// === FILTRO DE ARCHIVOS ===
+// Filtros de archivos
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error("Tipo de archivo no permitido"), false);
+    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!allowedTypes.includes(file.mimetype)) {
+        return cb(new Error('Tipo de archivo no permitido'), false);
     }
+    cb(null, true);
 };
 
-// === MIDDLEWARE FINAL ===
-const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 10 * 1024 * 1024 }, // Máx 10MB
-});
-
-module.exports = upload;
+// Exportar el middleware
+module.exports = multer({ storage, fileFilter });
