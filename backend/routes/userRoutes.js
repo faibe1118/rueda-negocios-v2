@@ -9,9 +9,10 @@ const {
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
 const { validateRegister, validateUpdateUser } = require("../middleware/validator");
+const upload = require("../middleware/upload");
 
 // Registro
-router.post("/register", registerUser);
+router.post("/register", upload.any(), validateRegister, registerUser);
 
 // Login
 router.post("/login", loginUser);
