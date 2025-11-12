@@ -1,108 +1,327 @@
-console.log("✅ register.js cargado correctamente");
+// register.js - Sistema de registro dinámico basado en roles
 
-// === register.js ===
+document.addEventListener('DOMContentLoaded', function() {
+    // Referencias a elementos del DOM
+    const roleSelect = document.getElementById('role');
+    const sectorSelect = document.getElementById('sector');
+    const sectorOtro = document.getElementById('sectorOtro');
+    const formalizadaSelect = document.getElementById('formalizada');
+    const noFormalizadaDiv = document.getElementById('noFormalizada');
+    const formalizadaDiv = document.getElementById('Formalizada');
+    const registerForm = document.getElementById('registerForm');
+    
+    // Obtener fieldsets correctamente
+    const allFieldsets = Array.from(document.querySelectorAll('fieldset'));
+    const datosEmpresaFieldset = allFieldsets.find(
+        fs => fs.querySelector('legend')?.textContent.trim() === 'Datos de la empresa'
+    );
+    const representanteFieldsetElement = allFieldsets.find(
+        fs => fs.querySelector('legend')?.textContent.trim() === 'Representante'
+    );
+    const catalogosFieldset = allFieldsets.find(
+        fs => fs.querySelector('legend')?.textContent.trim() === 'Catálogos'
+    );
+    const datosContactoDiv = document.getElementById('datosContacto');
 
-// Esperar a que el DOM cargue
-document.addEventListener("DOMContentLoaded", () => {
+    // Inicializar: ocultar todo excepto credenciales
+    ocultarTodoExceptoCredenciales();
 
-    const form = document.getElementById("registerForm");
+    // Event listener para cambio de rol
+    roleSelect.addEventListener('change', function() {
+        const rolSeleccionado = this.value;
+        manejarCambioRol(rolSeleccionado);
+    });
 
-    // Elementos clave
-    const roleSelect = document.getElementById("role");
-    const formalizadaSelect = document.getElementById("formalizada");
-    const sectorSelect = document.getElementById("sector");
-
-    const sectorOtroInput = document.getElementById("sectorOtro");
-    const formalizadaDiv = document.getElementById("Formalizada");
-    const noFormalizadaDiv = document.getElementById("noFormalizada");
-    const catalogoFile = document.getElementById("catalogoFile");
-    const necesidadesFile = document.getElementById("necesidadesFile");
-
-    // Ocultar secciones al inicio
-    formalizadaDiv.style.display = "none";
-    noFormalizadaDiv.style.display = "none";
-    catalogoFile.closest("fieldset").style.display = "none"; // Ocultar catálogo inicialmente
-
-    // === Cambios según el sector ===
-    sectorSelect.addEventListener("change", () => {
-        if (sectorSelect.value === "Otro") {
-            sectorOtroInput.style.display = "block";
+    // Event listener para sector "Otro"
+    sectorSelect.addEventListener('change', function() {
+        if (this.value === 'Otro') {
+            sectorOtro.style.display = 'inline-block';
+            sectorOtro.required = true;
         } else {
-            sectorOtroInput.style.display = "none";
-            sectorOtroInput.value = "";
+            sectorOtro.style.display = 'none';
+            sectorOtro.required = false;
+            sectorOtro.value = '';
         }
     });
 
-    // === Cambios según formalización ===
-    formalizadaSelect.addEventListener("change", () => {
-        if (formalizadaSelect.value === "true") {
-            formalizadaDiv.style.display = "block";
-            noFormalizadaDiv.style.display = "none";
-        } else if (formalizadaSelect.value === "false") {
-            formalizadaDiv.style.display = "none";
-            noFormalizadaDiv.style.display = "block";
+    // Event listener para empresa formalizada
+    formalizadaSelect.addEventListener('change', function() {
+        const esFormalizada = this.value === 'true';
+        
+        if (this.value === '') {
+            noFormalizadaDiv.style.display = 'none';
+            formalizadaDiv.style.display = 'none';
+            deshabilitarCamposFormalizacion();
+        } else if (esFormalizada) {
+            noFormalizadaDiv.style.display = 'none';
+            formalizadaDiv.style.display = 'block';
+            deshabilitarCampos(noFormalizadaDiv);
+            habilitarCampos(formalizadaDiv);
         } else {
-            formalizadaDiv.style.display = "none";
-            noFormalizadaDiv.style.display = "none";
+            noFormalizadaDiv.style.display = 'block';
+            formalizadaDiv.style.display = 'none';
+            deshabilitarCampos(formalizadaDiv);
+            habilitarCampos(noFormalizadaDiv);
         }
     });
 
-    // === Cambios según el rol ===
-    roleSelect.addEventListener("change", () => {
-        const role = roleSelect.value;
-
-        // Mostrar catálogo/needs según el rol
-        if (role === "ofertante") {
-            catalogoFile.closest("fieldset").style.display = "block";
-            catalogoFile.parentElement.style.display = "block";
-            necesidadesFile.parentElement.style.display = "none";
-        } else if (role === "demandante") {
-            catalogoFile.closest("fieldset").style.display = "block";
-            catalogoFile.parentElement.style.display = "none";
-            necesidadesFile.parentElement.style.display = "block";
-        } else if (role === "adminEvento") {
-            catalogoFile.closest("fieldset").style.display = "none"; // no muestra catálogo/needs
-        } else if (role === "adminSistema") {
-            catalogoFile.closest("fieldset").style.display = "none";
-            document.getElementById("datosContacto").style.display = "none";
-            // Ocultar campo de Representante
-            const repLegend = [...document.querySelectorAll("fieldset legend")].find(el => el.textContent.includes("Representante"));
-            if (repLegend) repLegend.closest("fieldset").style.display = "none";
-
-            // Ocultar campo de Datos de la empresa
-            const empresaLegend = [...document.querySelectorAll("fieldset legend")].find(el => el.textContent.includes("Datos de la empresa"));
-            if (empresaLegend) empresaLegend.closest("fieldset").style.display = "none";
-
-        } else {
-            catalogoFile.closest("fieldset").style.display = "none";
-        }
-    });
-
-    // === Envío del formulario ===
-    form.addEventListener("submit", async (e) => {
+    // Event listener para envío del formulario
+    registerForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        const formData = new FormData(this);
+        const rolSeleccionado = roleSelect.value;
 
-        const formData = new FormData(form);
-
-        try {
-            const response = await fetch("http://localhost:4000/api/users/register", {
-                method: "POST",
-                body: formData,
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert("✅ Registro exitoso");
-                console.log("Usuario registrado:", data);
-                form.reset();
-            } else {
-                alert("❌ Error: " + (data.message || "No se pudo registrar"));
-                console.error(data);
-            }
-        } catch (error) {
-            console.error("Error al registrar:", error);
-            alert("Error al conectar con el servidor");
+        // Validar según el rol
+        if (!validarFormularioSegunRol(formData, rolSeleccionado)) {
+            return;
         }
+
+        // Aquí puedes enviar los datos al servidor
+        console.log('Formulario válido para rol:', rolSeleccionado);
+        console.log('Datos del formulario:', Object.fromEntries(formData));
+        
+        // Ejemplo de envío (descomentar cuando tengas el endpoint)
+        // enviarDatos(formData);
+        
+        alert('Registro exitoso para rol: ' + rolSeleccionado);
     });
+
+    /**
+     * Oculta todos los fieldsets excepto las credenciales
+     */
+    function ocultarTodoExceptoCredenciales() {
+        datosEmpresaFieldset.style.display = 'none';
+        datosContactoDiv.style.display = 'none';
+        if (representanteFieldsetElement) {
+            representanteFieldsetElement.style.display = 'none';
+        }
+        catalogosFieldset.style.display = 'none';
+        noFormalizadaDiv.style.display = 'none';
+        formalizadaDiv.style.display = 'none';
+        
+        deshabilitarCamposNoCredenciales();
+    }
+
+    /**
+     * Maneja el cambio de rol y muestra/oculta secciones correspondientes
+     */
+    function manejarCambioRol(rol) {
+        // Resetear formulario
+        ocultarTodoExceptoCredenciales();
+
+        switch(rol) {
+            case 'ofertante':
+                mostrarSeccionesOfertante();
+                break;
+            case 'demandante':
+                mostrarSeccionesDemandante();
+                break;
+            case 'adminEvento':
+                mostrarSeccionesAdminEvento();
+                break;
+            case 'adminSistema':
+                // Solo credenciales (ya está así por defecto)
+                break;
+            default:
+                ocultarTodoExceptoCredenciales();
+        }
+    }
+
+    /**
+     * Muestra secciones para rol Ofertante
+     */
+    function mostrarSeccionesOfertante() {
+        datosEmpresaFieldset.style.display = 'block';
+        datosContactoDiv.style.display = 'block';
+        if (representanteFieldsetElement) {
+            representanteFieldsetElement.style.display = 'block';
+        }
+        catalogosFieldset.style.display = 'block';
+
+        // Habilitar campos necesarios
+        habilitarCampos(datosEmpresaFieldset);
+        habilitarCampos(datosContactoDiv);
+        if (representanteFieldsetElement) {
+            habilitarCampos(representanteFieldsetElement);
+        }
+
+        // Mostrar solo catálogo de ofertante
+        const catalogoLabel = catalogosFieldset.querySelector('label:nth-of-type(1)');
+        const catalogoInput = document.getElementById('catalogoFile');
+        const necesidadesLabel = catalogosFieldset.querySelector('label:nth-of-type(2)');
+        const necesidadesInput = document.getElementById('necesidadesFile');
+
+        if (catalogoLabel && catalogoInput) {
+            catalogoLabel.style.display = 'inline';
+            catalogoInput.style.display = 'inline';
+            catalogoInput.disabled = false;
+        }
+        if (necesidadesLabel && necesidadesInput) {
+            necesidadesLabel.style.display = 'none';
+            necesidadesInput.style.display = 'none';
+            necesidadesInput.disabled = true;
+        }
+    }
+
+    /**
+     * Muestra secciones para rol Demandante
+     */
+    function mostrarSeccionesDemandante() {
+        datosEmpresaFieldset.style.display = 'block';
+        datosContactoDiv.style.display = 'block';
+        if (representanteFieldsetElement) {
+            representanteFieldsetElement.style.display = 'block';
+        }
+        catalogosFieldset.style.display = 'block';
+
+        // Habilitar campos necesarios
+        habilitarCampos(datosEmpresaFieldset);
+        habilitarCampos(datosContactoDiv);
+        if (representanteFieldsetElement) {
+            habilitarCampos(representanteFieldsetElement);
+        }
+
+        // Mostrar solo necesidades de demandante
+        const catalogoLabel = catalogosFieldset.querySelector('label:nth-of-type(1)');
+        const catalogoInput = document.getElementById('catalogoFile');
+        const necesidadesLabel = catalogosFieldset.querySelector('label:nth-of-type(2)');
+        const necesidadesInput = document.getElementById('necesidadesFile');
+
+        if (catalogoLabel && catalogoInput) {
+            catalogoLabel.style.display = 'none';
+            catalogoInput.style.display = 'none';
+            catalogoInput.disabled = true;
+        }
+        if (necesidadesLabel && necesidadesInput) {
+            necesidadesLabel.style.display = 'inline';
+            necesidadesInput.style.display = 'inline';
+            necesidadesInput.disabled = false;
+        }
+    }
+
+    /**
+     * Muestra secciones para rol Admin de Evento
+     */
+    function mostrarSeccionesAdminEvento() {
+        datosEmpresaFieldset.style.display = 'block';
+        datosContactoDiv.style.display = 'block';
+        if (representanteFieldsetElement) {
+            representanteFieldsetElement.style.display = 'block';
+        }
+        // NO mostrar catálogos
+        catalogosFieldset.style.display = 'none';
+
+        // Habilitar campos necesarios
+        habilitarCampos(datosEmpresaFieldset);
+        habilitarCampos(datosContactoDiv);
+        if (representanteFieldsetElement) {
+            habilitarCampos(representanteFieldsetElement);
+        }
+
+        // Deshabilitar inputs de catálogos
+        deshabilitarCampos(catalogosFieldset);
+    }
+
+    /**
+     * Habilita todos los inputs dentro de un contenedor
+     */
+    function habilitarCampos(contenedor) {
+        if (!contenedor) return;
+        const inputs = contenedor.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.disabled = false;
+        });
+    }
+
+    /**
+     * Deshabilita todos los inputs dentro de un contenedor
+     */
+    function deshabilitarCampos(contenedor) {
+        if (!contenedor) return;
+        const inputs = contenedor.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.disabled = true;
+            // No limpiar required para mantener la estructura
+        });
+    }
+
+    /**
+     * Deshabilita campos que no son de credenciales
+     */
+    function deshabilitarCamposNoCredenciales() {
+        deshabilitarCampos(datosEmpresaFieldset);
+        deshabilitarCampos(datosContactoDiv);
+        if (representanteFieldsetElement) {
+            deshabilitarCampos(representanteFieldsetElement);
+        }
+        deshabilitarCampos(catalogosFieldset);
+        deshabilitarCamposFormalizacion();
+    }
+
+    /**
+     * Deshabilita campos de formalización
+     */
+    function deshabilitarCamposFormalizacion() {
+        deshabilitarCampos(noFormalizadaDiv);
+        deshabilitarCampos(formalizadaDiv);
+    }
+
+    /**
+     * Valida el formulario según el rol seleccionado
+     */
+    function validarFormularioSegunRol(formData, rol) {
+        const email = formData.get('email');
+        const password = formData.get('password');
+
+        // Validaciones básicas de credenciales (para todos los roles)
+        if (!email || !password) {
+            alert('Email y contraseña son obligatorios');
+            return false;
+        }
+
+        if (password.length < 6) {
+            alert('La contraseña debe tener al menos 6 caracteres');
+            return false;
+        }
+
+        // Validaciones específicas por rol
+        if (rol === 'ofertante' || rol === 'demandante' || rol === 'adminEvento') {
+            const nombreEmpresa = formData.get('nombreEmpresa');
+            const sector = formData.get('sector');
+            
+            if (!nombreEmpresa || !sector) {
+                alert('Debe completar los datos de la empresa');
+                return false;
+            }
+
+            if (sector === 'Otro' && !formData.get('sectorOtro')) {
+                alert('Debe especificar el sector');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Función para enviar datos al servidor (ejemplo)
+     */
+    function enviarDatos(formData) {
+        fetch('/api/register', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Éxito:', data);
+            alert('Registro exitoso');
+            registerForm.reset();
+            ocultarTodoExceptoCredenciales();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error en el registro');
+        });
+    }
 });
