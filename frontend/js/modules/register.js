@@ -1,6 +1,6 @@
 // register.js - Sistema de registro dinámico basado en roles
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Referencias a elementos del DOM
     const roleSelect = document.getElementById('role');
     const sectorSelect = document.getElementById('sector');
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const noFormalizadaDiv = document.getElementById('noFormalizada');
     const formalizadaDiv = document.getElementById('Formalizada');
     const registerForm = document.getElementById('registerForm');
-    
+
     // Obtener fieldsets correctamente
     const allFieldsets = Array.from(document.querySelectorAll('fieldset'));
     const datosEmpresaFieldset = allFieldsets.find(
@@ -27,13 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
     ocultarTodoExceptoCredenciales();
 
     // Event listener para cambio de rol
-    roleSelect.addEventListener('change', function() {
+    roleSelect.addEventListener('change', function () {
         const rolSeleccionado = this.value;
         manejarCambioRol(rolSeleccionado);
     });
 
     // Event listener para sector "Otro"
-    sectorSelect.addEventListener('change', function() {
+    sectorSelect.addEventListener('change', function () {
         if (this.value === 'Otro') {
             sectorOtro.style.display = 'inline-block';
             sectorOtro.required = true;
@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Event listener para empresa formalizada
-    formalizadaSelect.addEventListener('change', function() {
+    formalizadaSelect.addEventListener('change', function () {
         const esFormalizada = this.value === 'true';
-        
+
         if (this.value === '') {
             noFormalizadaDiv.style.display = 'none';
             formalizadaDiv.style.display = 'none';
@@ -66,9 +66,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Event listener para envío del formulario
-    registerForm.addEventListener('submit', function(e) {
+    registerForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this);
         const rolSeleccionado = roleSelect.value;
 
@@ -80,10 +80,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Aquí puedes enviar los datos al servidor
         console.log('Formulario válido para rol:', rolSeleccionado);
         console.log('Datos del formulario:', Object.fromEntries(formData));
-        
+
         // Ejemplo de envío (descomentar cuando tengas el endpoint)
         // enviarDatos(formData);
-        
+
         alert('Registro exitoso para rol: ' + rolSeleccionado);
     });
 
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         catalogosFieldset.style.display = 'none';
         noFormalizadaDiv.style.display = 'none';
         formalizadaDiv.style.display = 'none';
-        
+
         deshabilitarCamposNoCredenciales();
     }
 
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Resetear formulario
         ocultarTodoExceptoCredenciales();
 
-        switch(rol) {
+        switch (rol) {
             case 'ofertante':
                 mostrarSeccionesOfertante();
                 break;
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (rol === 'ofertante' || rol === 'demandante' || rol === 'adminEvento') {
             const nombreEmpresa = formData.get('nombreEmpresa');
             const sector = formData.get('sector');
-            
+
             if (!nombreEmpresa || !sector) {
                 alert('Debe completar los datos de la empresa');
                 return false;
@@ -308,20 +308,28 @@ document.addEventListener('DOMContentLoaded', function() {
      * Función para enviar datos al servidor (ejemplo)
      */
     function enviarDatos(formData) {
-        fetch('/api/register', {
+        fetch('http://localhost:4000/api/users/register', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Éxito:', data);
-            alert('Registro exitoso');
-            registerForm.reset();
-            ocultarTodoExceptoCredenciales();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error en el registro');
-        });
+            .then(async response => {
+                const data = await response.json();
+
+                if (!response.ok) {
+                    console.error('Error del servidor:', data);
+                    alert(data.message || 'Error en el registro');
+                    return;
+                }
+
+                console.log('✅ Usuario registrado correctamente:', data);
+                alert('✅ Registro exitoso');
+                registerForm.reset();
+                ocultarTodoExceptoCredenciales();
+            })
+            .catch(error => {
+                console.error('❌ Error en la conexión o en el envío:', error);
+                alert('Error en la conexión con el servidor');
+            });
     }
+
 });
