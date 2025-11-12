@@ -12,7 +12,7 @@ const { validateRegister, validateUpdateUser } = require("../middleware/validato
 const upload = require("../middleware/upload");
 
 // Registro
-router.post("/register", upload.any(), validateRegister, registerUser);
+router.post("/register", upload.any(), registerUser);
 
 // Login
 router.post("/login", loginUser);
