@@ -2,44 +2,41 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Registro - Rueda de Negocios</title>
-
-    <script src="../js/config/api.js"></script>
-    <script src="../js/services/authService.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - WorkSide</title>
 </head>
 
 <body>
-    <h1>Registro de Empresa</h1>
-
+    <h1>Registro de Usuarios</h1>
     <form id="registerForm" enctype="multipart/form-data">
         <fieldset>
             <legend>Credenciales</legend>
-            <label>Email:</label>
+
+            <label>Email: </label>
             <input type="email" name="email" required><br>
 
-            <label>Contraseña:</label>
+            <label>Contraseña: </label>
             <input type="password" name="password" minlength="6" required><br>
 
-            <label>Rol:</label>
+            <label>Rol: </label>
             <select name="role" id="role" required>
                 <option value="">Seleccione</option>
                 <option value="ofertante">Ofertante</option>
                 <option value="demandante">Demandante</option>
-                <option value="adminEvento">AdminEvento</option>
-                <option value="adminSistema">AdminSistema</option>
-            </select><br>
+                <option value="adminEvento">adminEvento</option>
+                <option value="adminSistema">adminSistema</option>
+            </select>
         </fieldset>
 
         <fieldset>
-            <legend>Datos empresa</legend>
-            <label>Nombre Empresa:</label>
+            <legend>Datos de la empresa</legend>
+
+            <label>Nombre empresa:</label>
             <input type="text" name="nombreEmpresa" required><br>
 
-            <label>Logo Empresa (archivo):</label>
-            <input type="file" name="logoEmpresaFile" accept="image/*"><br>
-            <small>Si no hay backend de uploads, puedes pegar URL en 'logoEmpresaUrl' abajo.</small>
-            <input type="text" name="logoEmpresaUrl" placeholder="(opcional) URL del logo"><br>
+            <label>Logo empresa (Img):</label>
+            <input type="file" name="logoEmpresa" accept="image/*"><br>
 
             <label>Sector:</label>
             <select name="sector" id="sector" required>
@@ -47,136 +44,108 @@
                 <option value="Agroalimentos">Agroalimentos</option>
                 <option value="Turismo">Turismo</option>
                 <option value="TIC">TIC</option>
-                <option value="Manufactura">Manufactura liviana</option>
-                <option value="Servicios">Servicios empresariales</option>
-                <option value="Logistica">Logística</option>
+                <option value="Manufactura">Manufactura</option>
+                <option value="Servicios">Servicios</option>
                 <option value="Otro">Otro</option>
             </select>
             <input type="text" name="sectorOtro" id="sectorOtro" placeholder="Indicar otro sector"
                 style="display:none;"><br>
 
             <label>¿La empresa está formalizada?</label>
-            <select name="formalizada" id="formalizada" required>
+            <select name="formalizada" id="formalizada">
                 <option value="">Seleccione</option>
-                <option value="true">Sí</option>
+                <option value="true">Si</option>
                 <option value="false">No</option>
-            </select><br>
+            </select>
 
-            <!-- Si NO formalizada -->
-            <div id="noFormalizadoFields" style="display:none; border:1px solid #ddd; padding:8px; margin:8px 0;">
-                <h4>Documentos (No formalizada)</h4>
-                <label>RUT provisional:</label>
-                <input type="text" name="rutProvisional" id="rutProvisional"><br>
+            <!--Si NO Formalizada-->
+            <div id="noFormalizada">
+                <fieldset>
+                    <legend>No formalizada</legend>
+                    <label>Rut provisional: </label>
+                    <input type="text" name="rutProvisional" id="rutProvisional"><br>
 
-                <label>Comprobante Matrícula (PDF):</label>
-                <input type="file" name="comprobanteMatriculaFile" accept="application/pdf"><br>
-                <input type="text" name="comprobanteMatriculaUrl" placeholder="(opcional) URL del PDF"><br>
+                    <label>Rut provisional (PDF):</label>
+                    <input type="file" name="rutProvisionalFile" id="rutProvisionalFile" accept="application/pdf"><br>
 
-                <label>Cédula Solicitante (PDF):</label>
-                <input type="file" name="cedulaSolicitanteFile" accept="application/pdf"><br>
-                <input type="text" name="cedulaSolicitanteUrl" placeholder="(opcional) URL del PDF"><br>
+                    <label>Comprobante matricula (PDF): </label>
+                    <input type="file" name="comprobanteMatricula" id="comprobanteMatricula"
+                        accept="application/pdf"><br>
+
+                    <label>Cedula del solicitante (PDF): </label>
+                    <input type="file" name="cedulaSolicitanteFile" id="cedulaSolicitante" accept="application/pdf"><br>
+                </fieldset>
             </div>
 
-            <!-- Si SI formalizada -->
-            <div id="formalizadoFields" style="display:none; border:1px solid #ddd; padding:8px; margin:8px 0;">
-                <h4>Documentos (Formalizada)</h4>
-                <label>RUT (PDF):</label>
-                <input type="file" name="rutFile" accept="application/pdf"><br>
-                <input type="text" name="rutUrl" placeholder="(opcional) URL del PDF"><br>
+            <div id="Formalizada">
+                <fieldset>
+                    <legend>Formalizada</legend>
+                    <label>Nit: </label>
+                    <input type="text" name="nit" id="nit"><br>
 
-                <label>Certificado de Existencia (PDF):</label>
-                <input type="file" name="certificadoExistenciaFile" accept="application/pdf"><br>
-                <input type="text" name="certificadoExistenciaUrl" placeholder="(opcional) URL del PDF"><br>
+                    <label>Rut (PDF): </label>
+                    <input type="file" name="rutFile" id="rutFile" accept="application/pdf"><br>
 
-                <label>Cédula Representante (PDF):</label>
-                <input type="file" name="cedulaRepresentanteFile" accept="application/pdf"><br>
-                <input type="text" name="cedulaRepresentanteUrl" placeholder="(opcional) URL del PDF"><br>
+                    <label>Certificado de existencia: </label>
+                    <input type="file" name="certificadoExistenciaFile" id="certificadoExistenciaFile" accept="application/pdf"><br>
+
+                    <label>Cedula del representante:</label>
+                    <input type="file" name="cedulaRepresentanteFile" id="cedulaRepresentanteFile" accept="application/pdf"><br>
+                </fieldset>
             </div>
-
-            <label>Catalogo (PDF) — si eres ofertante:</label>
-            <input type="file" name="catalogoFile" accept="application/pdf"><br>
-            <input type="text" name="catalogoUrl" placeholder="(opcional) URL del PDF"><br>
-
-            <label>Necesidades (PDF) — si eres demandante:</label>
-            <input type="file" name="necesidadesFile" accept="application/pdf"><br>
-            <input type="text" name="necesidadesUrl" placeholder="(opcional) URL del PDF"><br>
         </fieldset>
 
-        <fieldset>
-            <legend>Contacto</legend>
-            <label>Correo contacto:</label>
-            <input type="email" name="datosContacto.correo"><br>
-            <label>Teléfono:</label>
-            <input type="text" name="datosContacto.telefono"><br>
-            <label>Dirección:</label>
-            <input type="text" name="datosContacto.direccion"><br>
-            <label>Redes (separadas por coma):</label>
-            <input type="text" name="datosContacto.redes" placeholder="https://... , https://..."><br>
-        </fieldset>
+        <div id="datosContacto">
+            <fieldset>
+                <legend>Datos de contacto</legend>
+
+                <label>Correo de Contacto: </label>
+                <input type="text" name="correoContacto" id="correoContacto"><br>
+
+                <label>Telefono: </label>
+                <input type="text" name="telefono" id="telefono"><br>
+
+                <label>direccion: </label>
+                <input type="text" name="direccion" id="direccion"><br>
+
+                <label>Redes Sociales: </label>
+                <input type="text" name="redesSociales" id="redesSociales"><br>
+            </fieldset>
+        </div>
 
         <fieldset>
             <legend>Representante</legend>
-            <label>Nombre representante:</label>
-            <input type="text" name="representante.nombre"><br>
 
-            <label>Documento representante (número):</label>
-            <input type="text" name="representante.documento"><br>
+            <label>Nombre: </label>
+            <input type="text" name="nombreRepre" id="nombreRepre"><br>
 
-            <label>Cargo:</label>
-            <input type="text" name="representante.cargo"><br>
+            <label>Documento: </label>
+            <input type="text" name="documentoRepre" id="documentoRepre"><br>
+
+            <label>Cargo: </label>
+            <input type="text" name="cargo" id="cargo">
+        </fieldset>
+
+        <fieldset>
+            <legend>Catalogos</legend>
+
+            <label>Catalogo (Ofertante): </label>
+            <input type="file" name="catalogoFile" id="catalogoFile" accept="application/pdf"><br>
+
+            <label>Necesidades (Demandante): </label>
+            <input type="file" name="NecesidadesFile" id="necesidadesFile" accept="application/pdf"><br>
         </fieldset>
 
         <label>
             <input type="checkbox" name="aceptaTerminos" required>
             Acepto los términos y condiciones
-        </label><br><br>
+        </label><br>
 
         <button type="submit">Registrar</button>
     </form>
 
-    <p id="mensaje"></p>
+<script src="../js/modules/register.js"></script>
 
-    <script>
-        // Dinámicas de mostrar/ocultar
-        const formalizadaSelect = document.getElementById('formalizada');
-        const noFormalizadoFields = document.getElementById('noFormalizadoFields');
-        const formalizadoFields = document.getElementById('formalizadoFields');
-
-        const sectorSelect = document.getElementById('sector');
-        const sectorOtro = document.getElementById('sectorOtro');
-
-        const roleSelect = document.getElementById('role');
-
-        formalizadaSelect.addEventListener('change', () => {
-            const formalizada = formalizadaSelect.value === 'true';
-            formalizadoFields.style.display = formalizada ? 'block' : 'none';
-            noFormalizadoFields.style.display = formalizada ? 'none' : 'block';
-        });
-
-        sectorSelect.addEventListener('change', () => {
-            sectorOtro.style.display = sectorSelect.value === 'Otro' ? 'block' : 'none';
-        });
-
-        // Ocultar campos de catálogo/necesidades según rol
-        roleSelect.addEventListener('change', () => {
-            const role = roleSelect.value;
-            // ofertante -> mostrar catalogo
-            // demandante -> mostrar necesidades
-            // adminEvento/adminSistema -> ninguno
-            document.querySelector('input[name="catalogoFile"]').closest('label')?.parentElement; // noop
-            // visual hide/show:
-            document.querySelector('input[name="catalogoFile"]').parentElement.style.display = role === 'ofertante' ? 'block' : 'none';
-            document.querySelector('input[name="catalogoUrl"]').parentElement.style.display = role === 'ofertante' ? 'block' : 'none';
-            document.querySelector('input[name="necesidadesFile"]').parentElement.style.display = role === 'demandante' ? 'block' : 'none';
-            document.querySelector('input[name="necesidadesUrl"]').parentElement.style.display = role === 'demandante' ? 'block' : 'none';
-        });
-
-        // Inicial: esconder catálogo y necesidades
-        document.querySelector('input[name="catalogoFile"]').parentElement.style.display = 'none';
-        document.querySelector('input[name="catalogoUrl"]').parentElement.style.display = 'none';
-        document.querySelector('input[name="necesidadesFile"]').parentElement.style.display = 'none';
-        document.querySelector('input[name="necesidadesUrl"]').parentElement.style.display = 'none';
-    </script>
 </body>
 
 </html>

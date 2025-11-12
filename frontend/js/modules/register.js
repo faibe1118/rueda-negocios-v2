@@ -1,3 +1,5 @@
+console.log("✅ register.js cargado correctamente");
+
 // === register.js ===
 
 // Esperar a que el DOM cargue
@@ -63,8 +65,14 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (role === "adminSistema") {
             catalogoFile.closest("fieldset").style.display = "none";
             document.getElementById("datosContacto").style.display = "none";
-            document.querySelector("fieldset legend:contains('Representante')")?.closest("fieldset").style.display = "none";
-            document.querySelector("fieldset legend:contains('Datos de la empresa')")?.closest("fieldset").style.display = "none";
+            // Ocultar campo de Representante
+            const repLegend = [...document.querySelectorAll("fieldset legend")].find(el => el.textContent.includes("Representante"));
+            if (repLegend) repLegend.closest("fieldset").style.display = "none";
+
+            // Ocultar campo de Datos de la empresa
+            const empresaLegend = [...document.querySelectorAll("fieldset legend")].find(el => el.textContent.includes("Datos de la empresa"));
+            if (empresaLegend) empresaLegend.closest("fieldset").style.display = "none";
+
         } else {
             catalogoFile.closest("fieldset").style.display = "none";
         }
