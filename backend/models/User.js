@@ -21,10 +21,10 @@ const userSchema = new mongoose.Schema(
         },
 
         // 🏢 Datos principales de la empresa
-        nombreEmpresa: { type: String, required: true },
+        nombreEmpresa: { type: String, required: function(){return this.role !== 'adminSistema'}},
         logoEmpresa: { type: String, default: "" }, // ruta de imagen
-        sector: { type: String, required: true },
-        formalizada: { type: Boolean, required: true },
+        sector: { type: String, required: function(){return this.role !== 'adminSistema'} },
+        formalizada: { type: Boolean, required: function(){return this.role !== 'adminSistema'} },
 
         // ☎️ Datos de contacto
         datosContacto: {
