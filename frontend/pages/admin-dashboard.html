@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Panel del Administrador del Sistema</title>
+</head>
+
+<body>
+    <h1>Panel - Administrador del Sistema</h1>
+
+    <p>
+        Bienvenido, aquí puedes gestionar los módulos principales del sistema.
+    </p>
+
+    <button onclick="irGestionUsuarios()">👥 Gestión de Usuarios</button>
+    <br /><br />
+
+    <button onclick="irGestionPublicaciones()">
+        📰 Gestión de Publicaciones
+    </button>
+    <br /><br />
+
+    <button onclick="cerrarSesion()">🔐 Cerrar sesión</button>
+
+    <script>
+        // Validar que el admin haya iniciado sesión
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+
+        if (!token || role !== "adminSistema") {
+            alert("Acceso no autorizado");
+            window.location.href = "./login.html";
+        }
+
+        function irGestionUsuarios() {
+            window.location.href = "./gestion-usuarios.html";
+        }
+
+        function irGestionPublicaciones() {
+            window.location.href = "./gestion-publicaciones.html";
+        }
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "./login.html";
+        }
+    </script>
+</body>
+
+</html>
