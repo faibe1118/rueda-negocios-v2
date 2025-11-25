@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirigir según rol
             if (result.user.role === 'adminSistema') {
-                window.location.href = './adminPanel.html';
+                window.location.href = './admin-dashboard.html';
             } else {
                 window.location.href = './perfil.html';
             }
