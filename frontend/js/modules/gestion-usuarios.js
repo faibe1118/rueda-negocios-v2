@@ -30,8 +30,7 @@ async function cargarUsuarios() {
         <td>${user.role}</td>
         <td>${user.estadoRegistro}</td>
         <td>
-            <button onclick="cambiarEstado('${user._id}', 'aprobado')">Aprobar</button>
-            <button onclick="cambiarEstado('${user._id}', 'rechazado')">Rechazar</button>
+            <button onclick="verDetalles('${user._id}')">Ver detalles</button>
         </td>
         `;
             tbody.appendChild(row);
@@ -39,6 +38,10 @@ async function cargarUsuarios() {
     } catch (error) {
         mensaje.textContent = "Error de conexión con el servidor";
     }
+}
+
+function verDetalles(id) {
+    window.location.href = `./gestion-usuario-detalle.html?id=${id}`;
 }
 
 async function cambiarEstado(id, estado) {
