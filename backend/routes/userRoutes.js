@@ -25,6 +25,21 @@ router.put("/update", protect, validateUpdateUser, updateProfile);
 
 router.delete("/:id", protect, deleteUser);
 
+// Obtener todos los usuarios (solo adminSistema)
+router.get("/", protect, async (req, res) => {
+    if (req.user.role !== "adminSistema") {
+        return res.status(403).json({ message: "No autorizado" });
+    }
+
+    try {
+        const users = await User.find();
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: "Error al obtener usuarios" });
+    }
+});
+
+
 //Cosas dirigidas al adminSistema
 // Solo accesible por adminSistema
 const { adminOnly } = require("../middleware/adminMiddleware");

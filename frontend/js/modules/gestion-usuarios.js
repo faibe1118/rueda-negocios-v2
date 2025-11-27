@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", cargarUsuarios);
 
 async function cargarUsuarios() {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+    const role = localStorage.getItem("userRole");
     const tbody = document.getElementById("userTableBody");
     const mensaje = document.getElementById("mensaje");
 
@@ -30,10 +30,10 @@ async function cargarUsuarios() {
         <td>${user.role}</td>
         <td>${user.estadoRegistro}</td>
         <td>
-          <button onclick="cambiarEstado('${user._id}', 'aprobado')">Aprobar</button>
-          <button onclick="cambiarEstado('${user._id}', 'rechazado')">Rechazar</button>
+            <button onclick="cambiarEstado('${user._id}', 'aprobado')">Aprobar</button>
+            <button onclick="cambiarEstado('${user._id}', 'rechazado')">Rechazar</button>
         </td>
-      `;
+        `;
             tbody.appendChild(row);
         });
     } catch (error) {
