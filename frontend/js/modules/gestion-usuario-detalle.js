@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", cargarDetalle);
 
 async function cargarDetalle() {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+    const role = localStorage.getItem("userRole");
 
     if (!token || role !== "adminSistema") {
         alert("Acceso no autorizado");
