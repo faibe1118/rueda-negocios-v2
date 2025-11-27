@@ -10,6 +10,7 @@ const {
 const { protect } = require("../middleware/authMiddleware");
 const { validateRegister, validateUpdateUser } = require("../middleware/validator");
 const upload = require("../middleware/upload");
+const User = require("../models/User");
 
 // Registro
 router.post("/register", upload.any(), registerUser);
