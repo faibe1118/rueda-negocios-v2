@@ -23,24 +23,36 @@ exports.registerUser = async (req, res) => {
             req.body.aceptaTerminos = false;
         }
 
-        const {
-            email,
-            password,
-            role,
-            nombreEmpresa,
-            logoEmpresa,
-            sector,
-            formalizada,
-            datosContacto,
-            representante,
-            nit,
-            rutProvisional,
-            documentosFormalizados,
-            documentosNoFormalizados,
-            catalogoPDF,
-            necesidadesPDF,
-            aceptaTerminos
-        } = req.body;
+        const data = {
+            email: req.body.email,
+            password: req.body.password,
+            role: req.body.role,
+
+            nombreEmpresa: req.body.nombreEmpresa,
+            sector: req.body.sector,
+            formalizada: req.body.formalizada,
+            aceptaTerminos: req.body.aceptaTerminos,
+
+            // Archivos
+            logoEmpresa: req.files?.logoEmpresa?.[0]?.path || null,
+
+            // NO FORMALIZADA
+            rutProvisional: req.body.rutProvisional || null,
+            rutProvisionalFile: req.files?.rutProvisionalFile?.[0]?.path || null,
+            comprobanteMatricula: req.files?.comprobanteMatricula?.[0]?.path || null,
+            cedulaSolicitanteFile: req.files?.cedulaSolicitanteFile?.[0]?.path || null,
+
+            // FORMALIZADA
+            nit: req.body.nit || null,
+            rutFile: req.files?.rutFile?.[0]?.path || null,
+            certificadoExistenciaFile: req.files?.certificadoExistenciaFile?.[0]?.path || null,
+            cedulaRepresentanteFile: req.files?.cedulaRepresentanteFile?.[0]?.path || null,
+
+            // CATÁLOGOS
+            catalogoPDF: req.files?.catalogoFile?.[0]?.path || null,
+            necesidadesPDF: req.files?.necesidadesFile?.[0]?.path || null
+        };
+
 
         // Validar si el correo ya existe
         const existingUser = await User.findOne({ email });
@@ -49,24 +61,7 @@ exports.registerUser = async (req, res) => {
         }
 
         // Crear usuario
-        const newUser = await User.create({
-            email,
-            password,
-            role,
-            nombreEmpresa,
-            logoEmpresa,
-            sector,
-            formalizada,
-            datosContacto,
-            representante,
-            nit,
-            rutProvisional,
-            documentosFormalizados,
-            documentosNoFormalizados,
-            catalogoPDF,
-            necesidadesPDF,
-            aceptaTerminos
-        });
+        const newUser = await User.create({ data });
 
         const token = generateToken(newUser);
 
