@@ -10,58 +10,66 @@ const generateToken = (user) => {
     );
 };
 
-// 📌 Registro de nuevo usuario
+// helpers para obtener archivos por nombre
+const getFile = (files, name) => {
+    const f = files?.find(file => file.fieldname === name);
+    return f ? f.path : null;
+};
+
 exports.registerUser = async (req, res) => {
     try {
-        // ✅ Asegurar que req.body exista
         if (!req.body) req.body = {};
 
-        // ✅ Convertir checkbox "on" → true o false
-        if (req.body.aceptaTerminos === 'on') {
-            req.body.aceptaTerminos = true;
-        } else {
-            req.body.aceptaTerminos = false;
-        }
+        // convertir "on" → true/false
+        req.body.aceptaTerminos = req.body.aceptaTerminos === "on";
 
+        // construir objeto limpio de usuario
         const data = {
             email: req.body.email,
             password: req.body.password,
             role: req.body.role,
 
-            nombreEmpresa: req.body.nombreEmpresa,
-            sector: req.body.sector,
-            formalizada: req.body.formalizada,
+            nombreEmpresa: req.body.nombreEmpresa || null,
+            sector: req.body.sector || null,
+            formalizada: req.body.formalizada === "true" || req.body.formalizada === true,
             aceptaTerminos: req.body.aceptaTerminos,
 
-            // Archivos
-            logoEmpresa: req.files?.logoEmpresa?.[0]?.path || null,
+            // archivos
+            logoEmpresa: getFile(req.files, "logoEmpresa"),
 
             // NO FORMALIZADA
             rutProvisional: req.body.rutProvisional || null,
-            rutProvisionalFile: req.files?.rutProvisionalFile?.[0]?.path || null,
-            comprobanteMatricula: req.files?.comprobanteMatricula?.[0]?.path || null,
-            cedulaSolicitanteFile: req.files?.cedulaSolicitanteFile?.[0]?.path || null,
+            rutProvisionalFile: getFile(req.files, "rutProvisionalFile"),
+            comprobanteMatricula: getFile(req.files, "comprobanteMatricula"),
+            cedulaSolicitanteFile: getFile(req.files, "cedulaSolicitanteFile"),
 
             // FORMALIZADA
             nit: req.body.nit || null,
-            rutFile: req.files?.rutFile?.[0]?.path || null,
-            certificadoExistenciaFile: req.files?.certificadoExistenciaFile?.[0]?.path || null,
-            cedulaRepresentanteFile: req.files?.cedulaRepresentanteFile?.[0]?.path || null,
+            rutFile: getFile(req.files, "rutFile"),
+            certificadoExistenciaFile: getFile(req.files, "certificadoExistenciaFile"),
+            cedulaRepresentanteFile: getFile(req.files, "cedulaRepresentanteFile"),
 
-            // CATÁLOGOS
-            catalogoPDF: req.files?.catalogoFile?.[0]?.path || null,
-            necesidadesPDF: req.files?.necesidadesFile?.[0]?.path || null
+            // Catálogos PDF
+            catalogoPDF: getFile(req.files, "catalogoFile"),
+            necesidadesPDF: getFile(req.files, "necesidadesFile"),
+
+            // estado inicial
+            estadoRegistro: "pendiente"
         };
 
+        // validar email
+        if (!data.email) {
+            return res.status(400).json({ message: "El email es obligatorio" });
+        }
 
-        // Validar si el correo ya existe
-        const existingUser = await User.findOne({ email });
+        // validar si existe email
+        const existingUser = await User.findOne({ email: data.email });
         if (existingUser) {
             return res.status(400).json({ message: "El correo ya está registrado" });
         }
 
-        // Crear usuario
-        const newUser = await User.create({ data });
+        // crear usuario correctamente
+        const newUser = await User.create(data);
 
         const token = generateToken(newUser);
 
@@ -70,11 +78,13 @@ exports.registerUser = async (req, res) => {
             user: newUser,
             token,
         });
+
     } catch (error) {
         console.error("❌ Error al registrar usuario:", error);
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
 
 
 // 📌 Inicio de sesión
