@@ -40,7 +40,7 @@ async function cargarUsuarios() {
     }
 }
 
-function verDetalles(id) {
+function verDetalle(id) {
     window.location.href = `./gestion-usuario-detalle.html?id=${id}`;
 }
 
