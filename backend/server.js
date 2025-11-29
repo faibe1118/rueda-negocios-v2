@@ -23,6 +23,8 @@ app.use("/api/uploads", require("./routes/uploadRoutes"));
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/users", userRoutes);
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.get("/", (req, res) => {
     res.send("Bienvenido al backend de Rueda de Negocios 🚀");
 });
