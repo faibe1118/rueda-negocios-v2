@@ -12,9 +12,22 @@ const generateToken = (user) => {
 
 // helpers para obtener archivos por nombre
 const getFile = (files, name) => {
-    const f = files?.find(file => file.fieldname === name);
-    return f ? f.path : null;
+    if (!files) return null;
+
+    // multer.any() devuelve un ARRAY
+    if (Array.isArray(files)) {
+        const f = files.find(file => file.fieldname === name);
+        return f ? f.path : null;
+    }
+
+    // fallback si files viene como objeto (raro, pero seguro)
+    if (typeof files === "object") {
+        return files[name]?.[0]?.path || null;
+    }
+
+    return null;
 };
+
 
 exports.registerUser = async (req, res) => {
     try {
