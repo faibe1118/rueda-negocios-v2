@@ -31,6 +31,20 @@ const getFile = (files, name) => {
 
 exports.registerUser = async (req, res) => {
     try {
+        req.files = req.files || []; // <-- SOLUCIÓN CLAVE
+
+        const getFile = (files, name) => {
+            if (!files) return null;
+            if (Array.isArray(files)) {
+                const f = files.find(file => file.fieldname === name);
+                return f ? f.path : null;
+            }
+            if (typeof files === "object") {
+                return files[name]?.[0]?.path || null;
+            }
+            return null;
+        };
+
         if (!req.body) req.body = {};
 
         // convertir "on" → true/false
