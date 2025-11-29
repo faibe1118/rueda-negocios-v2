@@ -28,17 +28,19 @@ router.delete("/:id", protect, deleteUser);
 
 // Obtener todos los usuarios (solo adminSistema)
 router.get("/", protect, async (req, res) => {
-    if (req.user.role !== "adminSistema") {
-        return res.status(403).json({ message: "No autorizado" });
-    }
-
     try {
-        const users = await User.find();
+        if (req.user.role !== "adminSistema") {
+            return res.status(403).json({ message: "No autorizado" });
+        }
+
+        const users = await User.find({ estadoRegistro: "pendiente" });
+
         res.json(users);
-    } catch (err) {
-        res.status(500).json({ message: "Error al obtener usuarios" });
+    } catch (error) {
+        res.status(500).json({ message: "Error interno del servidor" });
     }
 });
+
 
 router.get("/:id", protect, async (req, res) => {
     try {
