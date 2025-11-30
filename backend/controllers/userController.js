@@ -123,6 +123,23 @@ exports.loginUser = async (req, res) => {
     }
 };
 
+exports.getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        res.json(user);
+
+    } catch (error) {
+        console.error("Error al obtener usuario:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
+
 // 📌 Obtener perfil del usuario autenticado
 exports.getProfile = async (req, res) => {
     try {

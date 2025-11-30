@@ -77,4 +77,7 @@ router.put("/:id/estado", protect, adminOnly, async (req, res) => {
     }
 });
 
+router.get("/users/:id", authMiddleware, adminOnly, getUserById);
+
+
 module.exports = router;
