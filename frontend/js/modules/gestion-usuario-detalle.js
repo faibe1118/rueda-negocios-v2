@@ -1,132 +1,101 @@
-document.addEventListener("DOMContentLoaded", cargarDetalle);
+document.addEventListener("DOMContentLoaded", cargarDetalles);
 
-async function cargarDetalle() {
+async function cargarDetalles() {
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get("id");
+
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
     if (!token || role !== "adminSistema") {
-        alert("Acceso no autorizado");
-        return window.location.href = "./login.html";
+        return (window.location.href = "./login.html");
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const userId = params.get("id");
+    try {
+        const res = await fetch(`http://127.0.0.1:4000/api/users/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
 
-    const res = await fetch(`http://127.0.0.1:4000/api/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
+        const user = await res.json();
 
-    const data = await res.json();
-    if (!res.ok) {
-        document.getElementById("detallesUsuario").innerHTML =
-            `<p>Error al cargar los datos</p>`;
-        return;
+        if (!res.ok) {
+            document.getElementById("detallesUsuario").innerHTML = "Error al cargar detalles.";
+            return;
+        }
+
+        mostrarDetalles(user);
+
+    } catch (err) {
+        document.getElementById("detallesUsuario").innerHTML = "Error de conexión.";
     }
-
-    // Construir HTML dinámico
-    const html = [];
-
-    // 📌 Datos básicos
-    html.push(`
-        <h3>Datos Básicos</h3>
-        ${campo("Email", data.email)}
-        ${campo("Rol", data.role)}
-        ${campo("Estado Registro", data.estadoRegistro)}
-    `);
-
-    // 📌 Datos de empresa (según rol)
-    if (data.role !== "adminSistema") {
-        html.push(`<h3>Datos de Empresa</h3>`);
-        html.push(`
-            ${campo("Nombre Empresa", data.nombreEmpresa)}
-            ${campo("Sector", data.sector)}
-            ${campo("Sector Otro", data.sectorOtro)}
-            ${campo("NIT", data.nit)}
-            ${campo("Formalizada", data.formalizada)}
-        `);
-
-        // 📌 Archivos de empresa
-        html.push("<h4>Archivos de Empresa</h4>");
-        html.push(`
-            ${archivo("Logo Empresa", data.logoEmpresa)}
-            ${archivo("RUT", data.rutProvisional)}
-            ${archivo("Certificado Existencia", data.documentosFormalizados?.certificadoExistencia)}
-            ${archivo("Cédula Representante", data.documentosFormalizados?.cedulaRepresentante)}
-            ${archivo("Documento No Formalizada", data.documentosNoFormalizados?.documentoNoFormalizada)}
-        `);
-    }
-
-    // 📌 Representante
-    if (data.representante) {
-        html.push(`<h3>Datos del Representante</h3>`);
-        html.push(`
-            ${campo("Nombre Representante", data.representante.nombre)}
-            ${campo("Cargo", data.representante.cargo)}
-            ${campo("Documento", data.representante.documento)}
-            ${campo("Teléfono", data.representante.telefono)}
-            ${campo("Correo", data.representante.correo)}
-        `);
-    }
-
-    // 📌 Datos de contacto
-    if (data.datosContacto) {
-        html.push(`<h3>Datos de Contacto</h3>`);
-        html.push(`
-            ${campo("Dirección", data.datosContacto.direccion)}
-            ${campo("Redes Sociales", data.datosContacto.redesSociales)}
-        `);
-    }
-
-    // 📌 Catálogos (solo ofertante)
-    if (data.role === "ofertante" && data.catalogoPDF) {
-        html.push(`<h3>Catálogos</h3>`);
-        html.push(archivo("Catálogo PDF", data.catalogoPDF));
-    }
-
-    // 📌 Necesidades (solo demandante)
-    if (data.role === "demandante" && data.necesidadesPDF) {
-        html.push(`<h3>Necesidades</h3>`);
-        html.push(archivo("Necesidades PDF", data.necesidadesPDF));
-    }
-
-    document.getElementById("detallesUsuario").innerHTML = html.join("");
 }
 
-// 🔧 FUNCIONES UTILITARIAS
+function mostrarDetalles(user) {
+    const cont = document.getElementById("detallesUsuario");
+    cont.innerHTML = "";
 
-function campo(nombre, valor) {
-    if (!valor) return "";
-    return `<p><strong>${nombre}:</strong> ${valor}</p>`;
-}
+    const crearCampo = (titulo, valor) => {
+        if (!valor) return "";
+        return `<p><strong>${titulo}:</strong> ${valor}</p>`;
+    };
 
-function archivo(nombre, ruta) {
-    if (!ruta) return "";
-    return `
-        <p><strong>${nombre}:</strong> 
-        <a href="http://127.0.0.1:4000${ruta}" target="_blank">Descargar</a></p>
+    const crearArchivo = (titulo, ruta) => {
+        if (!ruta) return "";
+        return `
+            <p>
+                <strong>${titulo}:</strong>
+                <a href="http://127.0.0.1:4000/${ruta}" target="_blank">
+                    Descargar archivo
+                </a>
+            </p>`;
+    };
+
+    cont.innerHTML += `
+        <h2>Información General</h2>
+        ${crearCampo("Email", user.email)}
+        ${crearCampo("Rol", user.role)}
+        ${crearCampo("Estado", user.estadoRegistro)}
+
+        <h3>Información Empresarial</h3>
+        ${crearCampo("Nombre Empresa", user.nombreEmpresa)}
+        ${crearCampo("Sector", user.sector)}
+        ${crearCampo("Formalizada", user.formalizada ? "Sí" : "No")}
+    `;
+
+    cont.innerHTML += `
+        <h3>Documentos</h3>
+        ${crearArchivo("Logo de Empresa", user.logoEmpresa)}
+        ${crearArchivo("RUT Provisional", user.rutProvisionalFile)}
+        ${crearArchivo("Comprobante Matrícula", user.comprobanteMatricula)}
+        ${crearArchivo("Cédula Solicitante", user.cedulaSolicitanteFile)}
+
+        ${crearArchivo("RUT", user.rutFile)}
+        ${crearArchivo("Certificado Existencia", user.certificadoExistenciaFile)}
+        ${crearArchivo("Cédula Representante", user.cedulaRepresentanteFile)}
+
+        ${crearArchivo("Catálogo PDF", user.catalogoPDF)}
+        ${crearArchivo("Necesidades PDF", user.necesidadesPDF)}
     `;
 }
 
-async function cambiarEstado(estado) {
-    const token = localStorage.getItem("token");
+async function cambiarEstado(nuevoEstado) {
     const params = new URLSearchParams(window.location.search);
-    const userId = params.get("id");
+    const id = params.get("id");
+    const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://127.0.0.1:4000/api/users/${userId}/estado`, {
+    const res = await fetch(`http://127.0.0.1:4000/api/users/${id}/estado`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ estado })
+        body: JSON.stringify({ estado: nuevoEstado })
     });
 
     const data = await res.json();
     alert(data.message);
 
-    if (res.ok) {
-        window.location.href = "./gestion-usuarios.html";
-    }
+    window.location.href = "./gestion-usuarios.html";
 }
 
 function volver() {

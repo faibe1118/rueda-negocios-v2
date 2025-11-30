@@ -7,18 +7,20 @@
 </head>
 
 <body>
-    <h1>Detalles del Usuario</h1>
+    <div id="detallesUsuario" style="line-height: 1.8;">
+        <h1>Detalles del Usuario</h1>
 
-    <button onclick="volver()">⬅ Volver</button>
-    <br><br>
+        <button onclick="volver()">⬅ Volver</button>
+        <br><br>
 
-    <div id="detallesUsuario"></div>
+        <div id="detallesUsuario"></div>
 
-    <br>
+        <br>
 
-    <button onclick="verDetalle('${user._id}')">Ver detalles</button>
+        <button onclick="verDetalle('${user._id}')">Ver detalles</button>
 
-    <script src="../js/modules/gestion-usuario-detalle.js"></script>
+        <script src="../js/modules/gestion-usuario-detalle.js"></script>
+    </div>
 </body>
 
 </html>
