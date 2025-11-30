@@ -18,17 +18,7 @@ const upload = require("../middleware/upload");
 // ================================
 router.post(
     "/register",
-    upload.fields([
-        { name: "logoEmpresa", maxCount: 1 },
-        { name: "rutProvisionalFile", maxCount: 1 },
-        { name: "comprobanteMatricula", maxCount: 1 },
-        { name: "cedulaSolicitanteFile", maxCount: 1 },
-        { name: "rutFile", maxCount: 1 },
-        { name: "certificadoExistenciaFile", maxCount: 1 },
-        { name: "cedulaRepresentanteFile", maxCount: 1 },
-        { name: "catalogoFile", maxCount: 1 },
-        { name: "necesidadesFile", maxCount: 1 }
-    ]),
+    upload.any(),
     registerUser
 );
 

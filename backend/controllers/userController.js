@@ -10,28 +10,21 @@ const generateToken = (user) => {
     );
 };
 
-// helpers para obtener archivos por nombre
-function getFile(req, fieldName) {
-    return req.files?.[fieldName]?.[0]?.path || null;
-}
-
 
 
 exports.registerUser = async (req, res) => {
+    console.log("BODY:", req.body);
+    console.log("FILES:", req.files);
+
+    
     try {
         req.files = req.files || []; // <-- SOLUCIÓN CLAVE
 
-        const getFile = (files, name) => {
-            if (!files) return null;
-            if (Array.isArray(files)) {
-                const f = files.find(file => file.fieldname === name);
-                return f ? f.path : null;
-            }
-            if (typeof files === "object") {
-                return files[name]?.[0]?.path || null;
-            }
-            return null;
+        const getFile = (field) => {
+            const file = req.files?.find(f => f.fieldname === field);
+            return file ? file.path : null;
         };
+
 
         if (!req.body) req.body = {};
 
