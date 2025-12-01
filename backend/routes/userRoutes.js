@@ -7,6 +7,7 @@ const {
     getProfile,
     updateProfile,
     deleteUser,
+    getUserById,
 } = require("../controllers/userController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -76,8 +77,5 @@ router.put("/:id/estado", protect, adminOnly, async (req, res) => {
         res.status(500).json({ message: "Error al actualizar estado" });
     }
 });
-
-router.get("/users/:id", authMiddleware, adminOnly, getUserById);
-
 
 module.exports = router;

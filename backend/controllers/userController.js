@@ -11,7 +11,6 @@ const generateToken = (user) => {
 };
 
 
-
 exports.registerUser = async (req, res) => {
     console.log("BODY:", req.body);
     console.log("FILES:", req.files);
