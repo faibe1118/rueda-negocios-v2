@@ -1,58 +1,81 @@
 const express = require("express");
 const router = express.Router();
+
 const {
     registerUser,
     loginUser,
     getProfile,
     updateProfile,
     deleteUser,
+    getUserById,
 } = require("../controllers/userController");
+
 const { protect } = require("../middleware/authMiddleware");
-const { validateRegister, validateUpdateUser } = require("../middleware/validator");
+const { adminOnly } = require("../middleware/adminMiddleware");
 const upload = require("../middleware/upload");
 
-// Registro
-router.post("/register", upload.any(), registerUser);
+// ================================
+//  REGISTRO (con archivos reales)
+// ================================
+router.post(
+    "/register",
+    upload.any(),
+    registerUser
+);
 
-// Login
+// LOGIN
 router.post("/login", loginUser);
 
-// Perfil (solo con token)
+// PERFIL
 router.get("/profile", protect, getProfile);
 
-// Actualizar perfil (requiere token)
-router.put("/update", protect, validateUpdateUser, updateProfile);
+// ACTUALIZAR PERFIL
+router.put("/update", protect, updateProfile);
 
+// ELIMINAR USUARIO
 router.delete("/:id", protect, deleteUser);
 
-//Cosas dirigidas al adminSistema
-// Solo accesible por adminSistema
-const { adminOnly } = require("../middleware/adminMiddleware");
+// ================================
+//  ADMIN SISTEMA - GESTIÓN USUARIOS
+// ================================
 
-// Obtener todos los usuarios (solo adminSistema)
+// Obtener usuarios "pendientes"
 router.get("/", protect, adminOnly, async (req, res) => {
     try {
-        const users = await require("../models/User").find();
+        const users = await require("../models/User").find({
+            estadoRegistro: "pendiente"
+        });
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: "Error al obtener usuarios" });
     }
 });
 
-// Actualizar estado (aprobar o rechazar)
+// Obtener detalles de un usuario
+router.get("/:id", protect, adminOnly, async (req, res) => {
+    try {
+        const user = await require("../models/User").findById(req.params.id);
+        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Error interno" });
+    }
+});
+
+// Cambiar estado (aprobar/rechazar)
 router.put("/:id/estado", protect, adminOnly, async (req, res) => {
     try {
         const user = await require("../models/User").findById(req.params.id);
         if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-        user.estado = req.body.estado;
+        user.estadoRegistro = req.body.estado; // <-- CAMBIO CORRECTO
         await user.save();
 
-        res.json({ message: `Usuario ${req.body.estado} correctamente`, user });
+        res.json({ message: `Usuario ${req.body.estado}`, user });
     } catch (error) {
         res.status(500).json({ message: "Error al actualizar estado" });
     }
 });
-
 
 module.exports = router;

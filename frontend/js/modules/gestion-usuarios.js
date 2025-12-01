@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", cargarUsuarios);
 
 async function cargarUsuarios() {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+    const role = localStorage.getItem("userRole");
     const tbody = document.getElementById("userTableBody");
     const mensaje = document.getElementById("mensaje");
 
@@ -30,15 +30,18 @@ async function cargarUsuarios() {
         <td>${user.role}</td>
         <td>${user.estadoRegistro}</td>
         <td>
-          <button onclick="cambiarEstado('${user._id}', 'aprobado')">Aprobar</button>
-          <button onclick="cambiarEstado('${user._id}', 'rechazado')">Rechazar</button>
+            <button onclick="verDetalles('${user._id}')">Ver detalles</button>
         </td>
-      `;
+        `;
             tbody.appendChild(row);
         });
     } catch (error) {
         mensaje.textContent = "Error de conexión con el servidor";
     }
+}
+
+function verDetalles(id) {
+    window.location.href = `./gestion-usuario-detalle.html?id=${id}`;
 }
 
 async function cambiarEstado(id, estado) {

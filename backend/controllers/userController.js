@@ -10,63 +10,73 @@ const generateToken = (user) => {
     );
 };
 
-// 📌 Registro de nuevo usuario
+
 exports.registerUser = async (req, res) => {
+    console.log("BODY:", req.body);
+    console.log("FILES:", req.files);
+
+    
     try {
-        // ✅ Asegurar que req.body exista
+        req.files = req.files || []; // <-- SOLUCIÓN CLAVE
+
+        const getFile = (field) => {
+            const file = req.files?.find(f => f.fieldname === field);
+            return file ? file.path : null;
+        };
+
+
         if (!req.body) req.body = {};
 
-        // ✅ Convertir checkbox "on" → true o false
-        if (req.body.aceptaTerminos === 'on') {
-            req.body.aceptaTerminos = true;
-        } else {
-            req.body.aceptaTerminos = false;
+        // convertir "on" → true/false
+        req.body.aceptaTerminos = req.body.aceptaTerminos === "on";
+
+        // construir objeto limpio de usuario
+        const data = {
+            email: req.body.email,
+            password: req.body.password,
+            role: req.body.role,
+
+            nombreEmpresa: req.body.nombreEmpresa || null,
+            sector: req.body.sector || null,
+            formalizada: req.body.formalizada === "true" || req.body.formalizada === true,
+            aceptaTerminos: req.body.aceptaTerminos,
+
+            // archivos
+            logoEmpresa: getFile(req.files, "logoEmpresa"),
+
+            // NO FORMALIZADA
+            rutProvisional: req.body.rutProvisional || null,
+            rutProvisionalFile: getFile(req.files, "rutProvisionalFile"),
+            comprobanteMatricula: getFile(req.files, "comprobanteMatricula"),
+            cedulaSolicitanteFile: getFile(req.files, "cedulaSolicitanteFile"),
+
+            // FORMALIZADA
+            nit: req.body.nit || null,
+            rutFile: getFile(req.files, "rutFile"),
+            certificadoExistenciaFile: getFile(req.files, "certificadoExistenciaFile"),
+            cedulaRepresentanteFile: getFile(req.files, "cedulaRepresentanteFile"),
+
+            // Catálogos PDF
+            catalogoPDF: getFile(req.files, "catalogoFile"),
+            necesidadesPDF: getFile(req.files, "necesidadesFile"),
+
+            // estado inicial
+            estadoRegistro: "pendiente"
+        };
+
+        // validar email
+        if (!data.email) {
+            return res.status(400).json({ message: "El email es obligatorio" });
         }
 
-        const {
-            email,
-            password,
-            role,
-            nombreEmpresa,
-            logoEmpresa,
-            sector,
-            formalizada,
-            datosContacto,
-            representante,
-            nit,
-            rutProvisional,
-            documentosFormalizados,
-            documentosNoFormalizados,
-            catalogoPDF,
-            necesidadesPDF,
-            aceptaTerminos
-        } = req.body;
-
-        // Validar si el correo ya existe
-        const existingUser = await User.findOne({ email });
+        // validar si existe email
+        const existingUser = await User.findOne({ email: data.email });
         if (existingUser) {
             return res.status(400).json({ message: "El correo ya está registrado" });
         }
 
-        // Crear usuario
-        const newUser = await User.create({
-            email,
-            password,
-            role,
-            nombreEmpresa,
-            logoEmpresa,
-            sector,
-            formalizada,
-            datosContacto,
-            representante,
-            nit,
-            rutProvisional,
-            documentosFormalizados,
-            documentosNoFormalizados,
-            catalogoPDF,
-            necesidadesPDF,
-            aceptaTerminos
-        });
+        // crear usuario correctamente
+        const newUser = await User.create(data);
 
         const token = generateToken(newUser);
 
@@ -75,11 +85,13 @@ exports.registerUser = async (req, res) => {
             user: newUser,
             token,
         });
+
     } catch (error) {
         console.error("❌ Error al registrar usuario:", error);
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
 
 
 // 📌 Inicio de sesión
@@ -109,6 +121,23 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 };
+
+exports.getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        res.json(user);
+
+    } catch (error) {
+        console.error("Error al obtener usuario:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+};
+
 
 // 📌 Obtener perfil del usuario autenticado
 exports.getProfile = async (req, res) => {
