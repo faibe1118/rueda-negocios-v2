@@ -21,6 +21,11 @@
     </button>
     <br /><br />
 
+    <button onclick="generarMatches()">
+        ⚡ Generar Matches Automáticos
+    </button>
+    <br /><br />
+
     <button onclick="cerrarSesion()">🔐 Cerrar sesión</button>
 
     <script>
@@ -39,6 +44,22 @@
 
         function irGestionPublicaciones() {
             window.location.href = "./gestion-publicaciones.html";
+        }
+
+        async function generarMatches() {
+            if (!confirm("¿Deseas ejecutar el algoritmo de emparejamiento?")) return;
+
+            try {
+                const response = await fetch("http://localhost:4000/api/matches/generate", {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const data = await response.json();
+                alert(data.message);
+            } catch (e) {
+                alert("Error generando matches");
+                console.error(e);
+            }
         }
 
         function cerrarSesion() {

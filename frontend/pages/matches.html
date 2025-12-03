@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Matches - Rueda de Negocios</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .match-card { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+        .match-card.accepted { border-color: green; background-color: #f0fff0; }
+        .btn { padding: 5px 10px; cursor: pointer; }
+        .btn-accept { background-color: green; color: white; border: none; }
+        .btn-reject { background-color: red; color: white; border: none; }
+        .btn-schedule { background-color: blue; color: white; border: none; }
+        
+        /* Modal simple */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        #modal-content { background: white; margin: 10% auto; padding: 20px; width: 300px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Mis Oportunidades de Negocio (Matches)</h1>
+    <a href="profile.html">⬅ Volver al Perfil</a> | <a href="agenda.html">📅 Ver Mi Agenda</a>
+    <hr>
+
+    <div id="matches-container">
+        <p>Cargando matches...</p>
+    </div>
+
+    <!-- Modal para Agendar -->
+    <div id="modal">
+        <div id="modal-content">
+            <h3>Agendar Reunión</h3>
+            <input type="hidden" id="matchIdInput">
+            <label>Fecha y Hora Inicio:</label><br>
+            <input type="datetime-local" id="startTime"><br><br>
+            <label>Fecha y Hora Fin:</label><br>
+            <input type="datetime-local" id="endTime"><br><br>
+            <label>Lugar / Mesa:</label><br>
+            <input type="text" id="location" value="Mesa Virtual 1"><br><br>
+            <button onclick="confirmarCita()">Confirmar</button>
+            <button onclick="cerrarModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="../js/services/matchService.js"></script>
+    <script src="../js/services/meetingService.js"></script>
+    <script>
+        async function cargarMatches() {
+            const container = document.getElementById("matches-container");
+            const matches = await matchService.getMyMatches();
+
+            if (matches.length === 0) {
+                container.innerHTML = "<p>No tienes matches aún.</p>";
+                return;
+            }
+
+            container.innerHTML = "";
+            matches.forEach(match => {
+                const div = document.createElement("div");
+                div.className = `match-card ${match.status}`;
+                
+                // Determinar qué nombre mostrar (si soy ofertante, muestro demandante, y viceversa)
+                // Para simplificar, mostramos ambos
+                const info = `
+                    <h3>Emparejamiento: ${match.supplierId.nombreEmpresa} ↔ ${match.buyerId.nombreEmpresa}</h3>
+                    <p><strong>Sector:</strong> ${match.supplierId.sector}</p>
+                    <p><strong>Estado:</strong> ${match.status.toUpperCase()}</p>
+                `;
+
+                let buttons = "";
+                if (match.status === "pending") {
+                    buttons = `
+                        <button class="btn btn-accept" onclick="responderMatch('${match._id}', 'accepted')">✅ Aceptar</button>
+                        <button class="btn btn-reject" onclick="responderMatch('${match._id}', 'rejected')">❌ Rechazar</button>
+                    `;
+                } else if (match.status === "accepted") {
+                    buttons = `
+                        <button class="btn btn-schedule" onclick="abrirModal('${match._id}')">📅 Agendar Cita</button>
+                    `;
+                }
+
+                div.innerHTML = info + buttons;
+                container.appendChild(div);
+            });
+        }
+
+        async function responderMatch(id, status) {
+            if(!confirm(`¿Estás seguro de ${status === 'accepted' ? 'aceptar' : 'rechazar'} este match?`)) return;
+            await matchService.updateMatchStatus(id, status);
+            cargarMatches(); // Recargar
+        }
+
+        function abrirModal(matchId) {
+            document.getElementById("matchIdInput").value = matchId;
+            document.getElementById("modal").style.display = "block";
+        }
+
+        function cerrarModal() {
+            document.getElementById("modal").style.display = "none";
+        }
+
+        async function confirmarCita() {
+            const matchId = document.getElementById("matchIdInput").value;
+            const startTime = document.getElementById("startTime").value;
+            const endTime = document.getElementById("endTime").value;
+            const location = document.getElementById("location").value;
+
+            if(!startTime || !endTime) return alert("Fechas obligatorias");
+
+            try {
+                await meetingService.scheduleMeeting({ matchId, startTime, endTime, location });
+                alert("¡Reunión agendada!");
+                cerrarModal();
+                window.location.href = "agenda.html";
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        // Iniciar
+        cargarMatches();
+    </script>
+</body>
+</html>

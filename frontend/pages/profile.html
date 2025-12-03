@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil - Rueda de Negocios</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .nav-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .logout {
+            background: #dc3545;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Mi Perfil</h1>
+    <p>Bienvenido a tu panel de control.</p>
+
+    <div style="margin-top: 20px;">
+        <a href="matches.html" class="nav-btn">🤝 Mis Matches</a>
+        <a href="agenda.html" class="nav-btn">📅 Mi Agenda</a>
+        <a href="#" onclick="logout()" class="nav-btn logout">🔐 Cerrar Sesión</a>
+    </div>
+
+    <script>
+        // Validación simple
+        const token = localStorage.getItem("token");
+        if (!token) window.location.href = "login.html";
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+
+</html>
