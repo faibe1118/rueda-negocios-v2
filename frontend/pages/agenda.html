@@ -3,61 +3,73 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Agenda - Rueda de Negocios</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <h1>📅 Mi Agenda de Reuniones</h1>
-    <a href="profile.html">⬅ Volver al Perfil</a> | <a href="matches.html">🤝 Ver Matches</a>
-    <hr>
 
-    <table id="agenda-table">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Hora Inicio</th>
-                <th>Hora Fin</th>
-                <th>Empresa</th>
-                <th>Lugar</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Se llena dinámicamente -->
-        </tbody>
-    </table>
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="#" class="logo">EventConnect</a>
+            <div class="nav-links">
+                <button onclick="logout()" class="btn btn-secondary"
+                    style="padding: 5px 10px; font-size: 0.9rem;">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container dashboard-grid">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="profile.html">👤 Mi Perfil</a>
+                <a href="matches.html">🤝 Mis Matches</a>
+                <a href="agenda.html" class="active">📅 Mi Agenda</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <div class="card">
+                <h2>Agenda de Reuniones</h2>
+                <p>Gestiona tus citas programadas.</p>
+
+                <div style="overflow-x: auto;">
+                    <table id="agenda-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Empresa</th>
+                                <th>Lugar</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script src="../js/services/meetingService.js"></script>
     <script>
+        function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+
         async function cargarAgenda() {
             const tbody = document.querySelector("#agenda-table tbody");
             const meetings = await meetingService.getSchedule();
 
             if (meetings.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='6'>No tienes reuniones programadas.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='5' class='text-center'>No tienes reuniones programadas.</td></tr>";
                 return;
             }
 
@@ -66,18 +78,15 @@
                 const start = new Date(m.startTime);
                 const end = new Date(m.endTime);
 
-                // Mostrar la otra empresa (no la mía)
-                // Esto es un poco truco en el frontend simple, mostramos ambas para asegurar
                 const empresas = `${m.matchId.supplierId.nombreEmpresa} y ${m.matchId.buyerId.nombreEmpresa}`;
 
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td>${start.toLocaleDateString()}</td>
-                    <td>${start.toLocaleTimeString()}</td>
-                    <td>${end.toLocaleTimeString()}</td>
+                    <td>${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                     <td>${empresas}</td>
                     <td>${m.location}</td>
-                    <td>${m.status}</td>
+                    <td><span style="background: rgba(34, 197, 94, 0.2); color: var(--success-color); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${m.status.toUpperCase()}</span></td>
                 `;
                 tbody.appendChild(tr);
             });

@@ -1,93 +1,138 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Matches - Rueda de Negocios</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        .match-card { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
-        .match-card.accepted { border-color: green; background-color: #f0fff0; }
-        .btn { padding: 5px 10px; cursor: pointer; }
-        .btn-accept { background-color: green; color: white; border: none; }
-        .btn-reject { background-color: red; color: white; border: none; }
-        .btn-schedule { background-color: blue; color: white; border: none; }
-        
-        /* Modal simple */
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        #modal-content { background: white; margin: 10% auto; padding: 20px; width: 300px; border-radius: 5px; }
-    </style>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <h1>Mis Oportunidades de Negocio (Matches)</h1>
-    <a href="profile.html">⬅ Volver al Perfil</a> | <a href="agenda.html">📅 Ver Mi Agenda</a>
-    <hr>
 
-    <div id="matches-container">
-        <p>Cargando matches...</p>
+<body>
+
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="#" class="logo">EventConnect</a>
+            <div class="nav-links">
+                <button onclick="logout()" class="btn btn-secondary"
+                    style="padding: 5px 10px; font-size: 0.9rem;">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container dashboard-grid">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="profile.html">👤 Mi Perfil</a>
+                <a href="matches.html" class="active">🤝 Mis Matches</a>
+                <a href="agenda.html">📅 Mi Agenda</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <div class="card">
+                <h2>Oportunidades de Negocio</h2>
+                <p>Aquí encontrarás empresas compatibles con tu perfil.</p>
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+
+                <div id="matches-container" class="grid" style="grid-template-columns: 1fr;">
+                    <p class="text-center">Cargando matches...</p>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Modal para Agendar -->
-    <div id="modal">
-        <div id="modal-content">
-            <h3>Agendar Reunión</h3>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Agendar Reunión</h3>
             <input type="hidden" id="matchIdInput">
-            <label>Fecha y Hora Inicio:</label><br>
-            <input type="datetime-local" id="startTime"><br><br>
-            <label>Fecha y Hora Fin:</label><br>
-            <input type="datetime-local" id="endTime"><br><br>
-            <label>Lugar / Mesa:</label><br>
-            <input type="text" id="location" value="Mesa Virtual 1"><br><br>
-            <button onclick="confirmarCita()">Confirmar</button>
-            <button onclick="cerrarModal()">Cancelar</button>
+
+            <div class="form-group">
+                <label class="form-label">Fecha y Hora Inicio</label>
+                <input type="datetime-local" id="startTime" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Fecha y Hora Fin</label>
+                <input type="datetime-local" id="endTime" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Lugar / Mesa</label>
+                <input type="text" id="location" value="Mesa Virtual 1" class="form-control">
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button onclick="cerrarModal()" class="btn btn-secondary">Cancelar</button>
+                <button onclick="confirmarCita()" class="btn btn-primary">Confirmar</button>
+            </div>
         </div>
     </div>
 
     <script src="../js/services/matchService.js"></script>
     <script src="../js/services/meetingService.js"></script>
     <script>
+        function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+
         async function cargarMatches() {
             const container = document.getElementById("matches-container");
             const matches = await matchService.getMyMatches();
 
             if (matches.length === 0) {
-                container.innerHTML = "<p>No tienes matches aún.</p>";
+                container.innerHTML = "<p class='text-center'>No tienes matches aún.</p>";
                 return;
             }
 
             container.innerHTML = "";
             matches.forEach(match => {
                 const div = document.createElement("div");
-                div.className = `match-card ${match.status}`;
-                
-                // Determinar qué nombre mostrar (si soy ofertante, muestro demandante, y viceversa)
-                // Para simplificar, mostramos ambos
+                div.className = "card";
+                div.style.padding = "1.5rem";
+                div.style.borderLeft = match.status === 'accepted' ? "4px solid var(--success-color)" : "4px solid var(--primary-color)";
+
                 const info = `
-                    <h3>Emparejamiento: ${match.supplierId.nombreEmpresa} ↔ ${match.buyerId.nombreEmpresa}</h3>
-                    <p><strong>Sector:</strong> ${match.supplierId.sector}</p>
-                    <p><strong>Estado:</strong> ${match.status.toUpperCase()}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 style="margin-bottom: 0.5rem;">${match.supplierId.nombreEmpresa} ↔ ${match.buyerId.nombreEmpresa}</h3>
+                            <p style="margin-bottom: 0.5rem;"><strong>Sector:</strong> ${match.supplierId.sector}</p>
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">${match.status.toUpperCase()}</span>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            ${getButtons(match)}
+                        </div>
+                    </div>
                 `;
 
-                let buttons = "";
-                if (match.status === "pending") {
-                    buttons = `
-                        <button class="btn btn-accept" onclick="responderMatch('${match._id}', 'accepted')">✅ Aceptar</button>
-                        <button class="btn btn-reject" onclick="responderMatch('${match._id}', 'rejected')">❌ Rechazar</button>
-                    `;
-                } else if (match.status === "accepted") {
-                    buttons = `
-                        <button class="btn btn-schedule" onclick="abrirModal('${match._id}')">📅 Agendar Cita</button>
-                    `;
-                }
-
-                div.innerHTML = info + buttons;
+                div.innerHTML = info;
                 container.appendChild(div);
             });
         }
 
+        function getButtons(match) {
+            if (match.status === "pending") {
+                return `
+                    <button class="btn btn-success" style="padding: 8px 16px;" onclick="responderMatch('${match._id}', 'accepted')">✅ Aceptar</button>
+                    <button class="btn btn-danger" style="padding: 8px 16px;" onclick="responderMatch('${match._id}', 'rejected')">❌ Rechazar</button>
+                `;
+            } else if (match.status === "accepted") {
+                return `
+                    <button class="btn btn-primary" onclick="abrirModal('${match._id}')">📅 Agendar Cita</button>
+                `;
+            }
+            return "";
+        }
+
         async function responderMatch(id, status) {
-            if(!confirm(`¿Estás seguro de ${status === 'accepted' ? 'aceptar' : 'rechazar'} este match?`)) return;
+            if (!confirm(`¿Estás seguro de ${status === 'accepted' ? 'aceptar' : 'rechazar'} este match?`)) return;
             await matchService.updateMatchStatus(id, status);
-            cargarMatches(); // Recargar
+            cargarMatches();
         }
 
         function abrirModal(matchId) {
@@ -105,7 +150,7 @@
             const endTime = document.getElementById("endTime").value;
             const location = document.getElementById("location").value;
 
-            if(!startTime || !endTime) return alert("Fechas obligatorias");
+            if (!startTime || !endTime) return alert("Fechas obligatorias");
 
             try {
                 await meetingService.scheduleMeeting({ matchId, startTime, endTime, location });
@@ -117,8 +162,8 @@
             }
         }
 
-        // Iniciar
         cargarMatches();
     </script>
 </body>
+
 </html>

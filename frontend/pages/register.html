@@ -4,192 +4,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - WorkSide</title>
-    <style>
-        /* Estilos básicos para mejorar la visualización */
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        fieldset {
-            margin: 15px 0;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        legend {
-            font-weight: bold;
-            padding: 0 10px;
-        }
-        label {
-            display: inline-block;
-            margin: 10px 0 5px 0;
-            font-weight: 500;
-        }
-        input, select {
-            margin: 5px 0;
-            padding: 8px;
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 30px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Registro - Rueda de Negocios</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Registro de Usuarios</h1>
-    <form id="registerForm" enctype="multipart/form-data" method="POST">
-        <fieldset>
-            <legend>Credenciales</legend>
 
-            <label>Email: </label>
-            <input type="email" name="email" required><br>
-
-            <label>Contraseña: </label>
-            <input type="password" name="password" minlength="6" required><br>
-
-            <label>Rol: </label>
-            <select name="role" id="role" required>
-                <option value="" selected>Seleccione</option>
-                <option value="ofertante">Ofertante</option>
-                <option value="demandante">Demandante</option>
-                <option value="adminEvento">Admin Evento</option>
-                <option value="adminSistema">Admin Sistema</option>
-            </select>
-        </fieldset>
-
-        <fieldset style="display: none;">
-            <legend>Datos de la empresa</legend>
-
-            <label>Nombre empresa:</label>
-            <input type="text" name="nombreEmpresa"><br>
-
-            <label>Logo empresa (Img):</label>
-            <input type="file" name="logoEmpresa" accept="image/*"><br>
-
-            <label>Sector:</label>
-            <select name="sector" id="sector">
-                <option value="" selected>Seleccione</option>
-                <option value="Agroalimentos">Agroalimentos</option>
-                <option value="Turismo">Turismo</option>
-                <option value="TIC">TIC</option>
-                <option value="Manufactura">Manufactura</option>
-                <option value="Servicios">Servicios</option>
-                <option value="Otro">Otro</option>
-            </select>
-            <input type="text" name="sectorOtro" id="sectorOtro" placeholder="Indicar otro sector"
-                style="display:none;"><br>
-
-            <label>¿La empresa está formalizada?</label>
-            <select name="formalizada" id="formalizada">
-                <option value="" selected>Seleccione</option>
-                <option value="true">Sí</option>
-                <option value="false">No</option>
-            </select>
-
-            <!--Si NO Formalizada-->
-            <div id="noFormalizada" style="display: none;">
-                <fieldset>
-                    <legend>No formalizada</legend>
-                    <label>Rut provisional: </label>
-                    <input type="text" name="rutProvisional" id="rutProvisional"><br>
-
-                    <label>Rut provisional (PDF):</label>
-                    <input type="file" name="rutProvisionalFile" id="rutProvisionalFile" accept="application/pdf"><br>
-
-                    <label>Comprobante matrícula (PDF): </label>
-                    <input type="file" name="comprobanteMatricula" id="comprobanteMatricula"
-                        accept="application/pdf"><br>
-
-                    <label>Cédula del solicitante (PDF): </label>
-                    <input type="file" name="cedulaSolicitanteFile" id="cedulaSolicitante" accept="application/pdf"><br>
-                </fieldset>
-            </div>
-
-            <div id="Formalizada" style="display: none;">
-                <fieldset>
-                    <legend>Formalizada</legend>
-                    <label>Nit: </label>
-                    <input type="text" name="nit" id="nit"><br>
-
-                    <label>Rut (PDF): </label>
-                    <input type="file" name="rutFile" id="rutFile" accept="application/pdf"><br>
-
-                    <label>Certificado de existencia: </label>
-                    <input type="file" name="certificadoExistenciaFile" id="certificadoExistenciaFile" accept="application/pdf"><br>
-
-                    <label>Cédula del representante:</label>
-                    <input type="file" name="cedulaRepresentanteFile" id="cedulaRepresentanteFile" accept="application/pdf"><br>
-                </fieldset>
-            </div>
-        </fieldset>
-
-        <div id="datosContacto" style="display: none;">
-            <fieldset>
-                <legend>Datos de contacto</legend>
-
-                <label>Correo de Contacto: </label>
-                <input type="email" name="correoContacto" id="correoContacto"><br>
-
-                <label>Teléfono: </label>
-                <input type="tel" name="telefono" id="telefono"><br>
-
-                <label>Dirección: </label>
-                <input type="text" name="direccion" id="direccion"><br>
-
-                <label>Redes Sociales: </label>
-                <input type="text" name="redesSociales" id="redesSociales" placeholder="Ej: @miempresa"><br>
-            </fieldset>
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="../index.html" class="logo">EventConnect</a>
+            <a href="login.html" class="btn btn-secondary" style="padding: 8px 16px;">Iniciar Sesión</a>
         </div>
+    </nav>
 
-        <fieldset style="display: none;">
-            <legend>Representante</legend>
+    <div class="container" style="max-width: 800px; margin: 40px auto;">
+        <div class="card">
+            <h2 class="text-center" style="margin-bottom: 2rem;">Crear Cuenta Empresarial</h2>
 
-            <label>Nombre: </label>
-            <input type="text" name="nombreRepre" id="nombreRepre"><br>
+            <form id="registerForm" enctype="multipart/form-data">
 
-            <label>Documento: </label>
-            <input type="text" name="documentoRepre" id="documentoRepre"><br>
+                <!-- Datos de Cuenta -->
+                <h4
+                    style="color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">
+                    1. Datos de Cuenta</h4>
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" name="password" class="form-control" required minlength="6">
+                    </div>
+                </div>
 
-            <label>Cargo: </label>
-            <input type="text" name="cargo" id="cargo">
-        </fieldset>
+                <div class="form-group">
+                    <label class="form-label">Tipo de Participación</label>
+                    <select name="role" class="form-control" required>
+                        <option value="">Seleccione...</option>
+                        <option value="ofertante">Ofertante (Ofrezco productos/servicios)</option>
+                        <option value="demandante">Demandante (Busco proveedores)</option>
+                    </select>
+                </div>
 
-        <fieldset style="display: none;">
-            <legend>Catálogos</legend>
+                <!-- Datos de la Empresa -->
+                <h4
+                    style="color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; margin-top: 30px;">
+                    2. Información de la Empresa</h4>
 
-            <label>Catálogo (Ofertante): </label>
-            <input type="file" name="catalogoFile" id="catalogoFile" accept="application/pdf"><br>
+                <div class="form-group">
+                    <label class="form-label">Nombre de la Empresa</label>
+                    <input type="text" name="nombreEmpresa" class="form-control" required>
+                </div>
 
-            <label>Necesidades (Demandante): </label>
-            <input type="file" name="necesidadesFile" id="necesidadesFile" accept="application/pdf"><br>
-        </fieldset>
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Sector Económico</label>
+                        <select name="sector" class="form-control" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Turismo">Turismo y Hospitalidad</option>
+                            <option value="Agroalimentos">Agroalimentos</option>
+                            <option value="TIC">Tecnología (TIC)</option>
+                            <option value="Servicios">Servicios Empresariales</option>
+                            <option value="Manufactura">Manufactura</option>
+                            <option value="Logistica">Logística</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Estado de Formalización</label>
+                        <select name="formalizada" id="formalizada" class="form-control" required
+                            onchange="toggleDocs()">
+                            <option value="true">Empresa Formalizada</option>
+                            <option value="false">En proceso / No formalizada</option>
+                        </select>
+                    </div>
+                </div>
 
-        <label>
-            <input type="checkbox" name="aceptaTerminos" required>
-            Acepto los términos y condiciones
-        </label><br>
+                <!-- Documentos -->
+                <h4
+                    style="color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; margin-top: 30px;">
+                    3. Documentación</h4>
 
-        <button type="submit">Registrar</button>
-    </form>
-<script src="../js/config/config.js"></script>
-<script src="../js/modules/register.js"></script>
+                <div id="docs-formalizada">
+                    <div class="form-group">
+                        <label class="form-label">NIT</label>
+                        <input type="text" name="nit" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">RUT (PDF)</label>
+                        <input type="file" name="rutFile" class="form-control" accept=".pdf">
+                    </div>
+                </div>
 
+                <div id="docs-no-formalizada" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">RUT Provisional (Opcional)</label>
+                        <input type="text" name="rutProvisional" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="aceptaTerminos" required style="width: 20px; height: 20px;">
+                        <span style="color: var(--text-secondary);">Acepto los términos y condiciones</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 30px;">Registrarse</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleDocs() {
+            const isFormal = document.getElementById("formalizada").value === "true";
+            document.getElementById("docs-formalizada").style.display = isFormal ? "block" : "none";
+            document.getElementById("docs-no-formalizada").style.display = isFormal ? "none" : "block";
+        }
+
+        document.getElementById("registerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            try {
+                const response = await fetch("http://localhost:4000/api/users/register", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("Registro exitoso. Por favor inicia sesión.");
+                    window.location.href = "login.html";
+                } else {
+                    alert(data.message || "Error en el registro");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión");
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -3,48 +3,86 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Perfil - Rueda de Negocios</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 20px;
-        }
-
-        .nav-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        .logout {
-            background: #dc3545;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Mi Perfil</h1>
-    <p>Bienvenido a tu panel de control.</p>
 
-    <div style="margin-top: 20px;">
-        <a href="matches.html" class="nav-btn">🤝 Mis Matches</a>
-        <a href="agenda.html" class="nav-btn">📅 Mi Agenda</a>
-        <a href="#" onclick="logout()" class="nav-btn logout">🔐 Cerrar Sesión</a>
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="#" class="logo">EventConnect</a>
+            <div class="nav-links">
+                <button onclick="logout()" class="btn btn-secondary"
+                    style="padding: 5px 10px; font-size: 0.9rem;">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container dashboard-grid">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="profile.html" class="active">👤 Mi Perfil</a>
+                <a href="matches.html">🤝 Mis Matches</a>
+                <a href="agenda.html">📅 Mi Agenda</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2>Mi Perfil Empresarial</h2>
+                    <span class="btn btn-primary" style="font-size: 0.8rem; padding: 5px 10px;">Activo</span>
+                </div>
+
+                <div class="grid">
+                    <div style="background: var(--bg-color); padding: 20px; border-radius: 8px;">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Información General</h3>
+                        <p><strong>Empresa:</strong> <span id="nombreEmpresa">Cargando...</span></p>
+                        <p><strong>Sector:</strong> <span id="sector">Cargando...</span></p>
+                        <p><strong>Email:</strong> <span id="email">Cargando...</span></p>
+                    </div>
+
+                    <div style="background: var(--bg-color); padding: 20px; border-radius: 8px;">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Acciones Rápidas</h3>
+                        <a href="matches.html" class="btn btn-secondary btn-block mb-20">Ver Oportunidades</a>
+                        <a href="agenda.html" class="btn btn-secondary btn-block">Ver Agenda</a>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
-        // Validación simple
         const token = localStorage.getItem("token");
         if (!token) window.location.href = "login.html";
+
+        // Cargar datos del perfil
+        async function loadProfile() {
+            try {
+                const response = await fetch("http://localhost:4000/api/users/profile", {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const user = await response.json();
+
+                document.getElementById("nombreEmpresa").textContent = user.nombreEmpresa || "No registrado";
+                document.getElementById("sector").textContent = user.sector || "No registrado";
+                document.getElementById("email").textContent = user.email;
+            } catch (e) {
+                console.error(e);
+            }
+        }
 
         function logout() {
             localStorage.clear();
             window.location.href = "login.html";
         }
+
+        loadProfile();
     </script>
 </body>
 
