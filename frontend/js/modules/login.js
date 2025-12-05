@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Guardar token y datos del usuario
             localStorage.setItem('token', result.token);
             localStorage.setItem('userRole', result.user.role);
+            localStorage.setItem('userEmail', result.user.email);
 
             loginMessage.textContent = '✅ Inicio de sesión exitoso';
             loginMessage.style.color = 'green';
