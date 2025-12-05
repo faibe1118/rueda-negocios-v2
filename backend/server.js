@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
     res.send("Bienvenido al backend de Rueda de Negocios 🚀");
 });
 
+app.use("/api/eventos", require("./routes/eventoRoutes"));
 
 // Ruta de prueba (para verificar servidor)
 app.get("/api", (req, res) => {
