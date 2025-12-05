@@ -63,10 +63,16 @@
                     localStorage.setItem("token", data.token);
                     localStorage.setItem("userRole", data.user.role);
 
-                    if (data.user.role === "adminSistema") {
-                        window.location.href = "admin-dashboard.html";
-                    } else {
-                        window.location.href = "profile.html";
+                    // Redirigir según el rol del usuario
+                    switch (data.user.role) {
+                        case "adminSistema":
+                            window.location.href = "admin-dashboard.html";
+                            break;
+                        case "adminEvento":
+                            window.location.href = "admin-evento-dashboard.html";
+                            break;
+                        default:
+                            window.location.href = "profile.html";
                     }
                 } else {
                     alert(data.message || "Error al iniciar sesión");
