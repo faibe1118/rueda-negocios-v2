@@ -13,25 +13,14 @@
 
     <nav class="navbar">
         <div class="container navbar-content">
-            <a href="#" class="logo">EventConnect</a>
+            <a href="profile.html" class="logo">EventConnect</a>
             <div class="nav-links">
-                <button onclick="logout()" class="btn btn-secondary"
-                    style="padding: 5px 10px; font-size: 0.9rem;">Cerrar Sesión</button>
+                <span style="color: var(--text-secondary);">Mi Cuenta</span>
             </div>
         </div>
     </nav>
 
-    <div class="container dashboard-grid">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="profile.html" class="active">👤 Mi Perfil</a>
-                <a href="matches.html">🤝 Mis Matches</a>
-                <a href="agenda.html">📅 Mi Agenda</a>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
+    <div class="dashboard-grid">
         <main>
             <div class="card">
                 <div id="profileContent">
@@ -251,13 +240,9 @@
             return roles[role] || role;
         }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = "login.html";
-        }
-
         loadProfile();
     </script>
+    <script src="../js/components/sidebar-user.js"></script>
 </body>
 
 </html>
