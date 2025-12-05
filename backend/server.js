@@ -22,6 +22,8 @@ app.use("/api/uploads", require("./routes/uploadRoutes"));
 // Rutas
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/users", userRoutes);
+app.use("/api/matches", require("./routes/matchRoutes"));
+app.use("/api/meetings", require("./routes/meetingRoutes"));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

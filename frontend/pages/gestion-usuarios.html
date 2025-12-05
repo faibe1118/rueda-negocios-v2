@@ -2,29 +2,82 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Gestión de Usuarios</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Rueda de Negocios</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Gestión de Usuarios</h1>
-    <button onclick="volver()">⬅ Volver al panel</button>
-    <br /><br />
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado Actual</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="userTableBody"></tbody>
-    </table>
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="#" class="logo">EventConnect Admin</a>
+            <div class="nav-links">
+                <span style="color: var(--text-secondary);">Administrador</span>
+                <button onclick="cerrarSesion()" class="btn btn-secondary"
+                    style="padding: 5px 10px; font-size: 0.9rem;">Salir</button>
+            </div>
+        </div>
+    </nav>
 
-    <p id="mensaje"></p>
+    <div class="container dashboard-grid">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html">📊 Panel Principal</a>
+                <a href="gestion-usuarios.html" class="active">👥 Gestión de Usuarios</a>
+                <a href="gestion-publicaciones.html">📰 Publicaciones</a>
+            </nav>
+        </aside>
 
+        <!-- Main Content -->
+        <main>
+            <div class="card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                    <h2 style="margin-bottom: 0;">👥 Gestión de Usuarios</h2>
+                    <button onclick="volver()" class="btn btn-secondary" style="padding: 8px 16px;">
+                        ⬅ Volver al panel
+                    </button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado Actual</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody"></tbody>
+                    </table>
+                </div>
+
+                <p id="mensaje" style="margin-top: 1rem;"></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("userRole");
+
+        if (!token || role !== "adminSistema") {
+            window.location.href = "login.html";
+        }
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+
+        function volver() {
+            window.location.href = "admin-dashboard.html";
+        }
+    </script>
     <script src="../js/modules/gestion-usuarios.js"></script>
 </body>
 

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Rueda de Negocios</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="#" class="logo">EventConnect</a>
+            <div class="nav-links">
+                <button onclick="logout()" class="btn btn-secondary"
+                    style="padding: 5px 10px; font-size: 0.9rem;">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container dashboard-grid">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="profile.html" class="active">👤 Mi Perfil</a>
+                <a href="matches.html">🤝 Mis Matches</a>
+                <a href="agenda.html">📅 Mi Agenda</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <div class="card">
+                <div id="profileContent">
+                    <div style="display: flex; align-items: center; justify-content: center; padding: 3rem;">
+                        <p style="color: var(--text-secondary);">⏳ Cargando información del perfil...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) window.location.href = "login.html";
+
+        async function loadProfile() {
+            try {
+                const response = await fetch("http://localhost:4000/api/users/profile", {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const user = await response.json();
+                renderProfile(user);
+            } catch (e) {
+                console.error(e);
+                document.getElementById("profileContent").innerHTML = `
+                    <p style="color: var(--danger-color);">Error al cargar el perfil</p>
+                `;
+            }
+        }
+
+        function renderProfile(user) {
+            const container = document.getElementById("profileContent");
+
+            const estadoClass = {
+                'pendiente': 'status-pending',
+                'aprobado': 'status-approved',
+                'rechazado': 'status-rejected'
+            }[user.estadoRegistro] || 'status-pending';
+
+            const fileLink = file =>
+                file ? `<a href="http://localhost:4000/${file}" target="_blank" class="file-link">📄 Ver archivo</a>` : `<span class="file-missing">No adjuntado</span>`;
+
+            container.innerHTML = `
+                <!-- Header del perfil -->
+                <div class="user-header">
+                    <div class="user-header-info">
+                        <h2 style="margin-bottom: 0.5rem;">${user.nombreEmpresa || "Mi Empresa"}</h2>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                            <span class="status-badge ${estadoClass}">${user.estadoRegistro}</span>
+                            <span class="role-badge">${formatRole(user.role)}</span>
+                        </div>
+                    </div>
+                    ${user.logoEmpresa ? `<img src="http://localhost:4000/${user.logoEmpresa}" alt="Logo" class="company-logo">` : '<div class="company-logo-placeholder">🏢</div>'}
+                </div>
+
+                <!-- Grid de información básica -->
+                <div class="info-grid">
+
+                    <div class="info-card">
+                        <div class="info-card-icon">🏭</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Sector</span>
+                            <span class="info-value">${user.sector || "No especificado"}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📋</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Empresa Formalizada</span>
+                            <span class="info-value">${user.formalizada ? "✅ Sí" : "⏳ No"}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">🔢</div>
+                        <div class="info-card-content">
+                            <span class="info-label">${user.formalizada ? 'NIT' : 'RUT Provisional'}</span>
+                            <span class="info-value">${user.formalizada ? (user.nit || "No registrado") : (user.rutProvisional || "No registrado")}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de datos de contacto -->
+                <div class="section-title">
+                    <h3>📞 Datos de Contacto</h3>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">📱</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Teléfono</span>
+                            <span class="info-value">${user.datosContacto?.telefono || "No registrado"}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">✉️</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Correo de Contacto</span>
+                            <span class="info-value">${user.datosContacto?.correo || user.email}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📍</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Dirección</span>
+                            <span class="info-value">${user.datosContacto?.direccion || "No registrada"}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">🌐</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Redes Sociales</span>
+                            <span class="info-value">${user.datosContacto?.redes?.length > 0 ? user.datosContacto.redes.join(", ") : "No registradas"}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de representante -->
+                <div class="section-title">
+                    <h3>👤 Representante Legal</h3>
+                </div>
+                
+                <div class="info-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div class="info-card">
+                        <div class="info-card-icon">🧑‍💼</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Nombre</span>
+                            <span class="info-value">${user.representante?.nombre || "No registrado"}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">🪪</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Documento</span>
+                            <span class="info-value">${user.representante?.documento || "No registrado"}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">💼</div>
+                        <div class="info-card-content">
+                            <span class="info-label">Cargo</span>
+                            <span class="info-value">${user.representante?.cargo || "No registrado"}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de documentos -->
+                <div class="section-title">
+                    <h3>📁 Mis Documentos</h3>
+                </div>
+                
+                <div class="docs-grid">
+                    ${user.formalizada ? `
+                        <div class="doc-item">
+                            <span class="doc-label">RUT</span>
+                            ${fileLink(user.documentosFormalizados?.rut)}
+                        </div>
+                        <div class="doc-item">
+                            <span class="doc-label">Certificado de Existencia</span>
+                            ${fileLink(user.documentosFormalizados?.certificadoExistencia)}
+                        </div>
+                        <div class="doc-item">
+                            <span class="doc-label">Cédula del Representante</span>
+                            ${fileLink(user.documentosFormalizados?.cedulaRepresentante)}
+                        </div>
+                    ` : `
+                        <div class="doc-item">
+                            <span class="doc-label">Comprobante de Matrícula</span>
+                            ${fileLink(user.documentosNoFormalizados?.comprobanteMatricula)}
+                        </div>
+                        <div class="doc-item">
+                            <span class="doc-label">Cédula del Solicitante</span>
+                            ${fileLink(user.documentosNoFormalizados?.cedulaSolicitante)}
+                        </div>
+                    `}
+                </div>
+
+                <!-- Sección de catálogos -->
+                <div class="section-title">
+                    <h3>📚 Catálogos Comerciales</h3>
+                </div>
+                
+                <div class="docs-grid">
+                    <div class="doc-item">
+                        <span class="doc-label">Catálogo de Productos/Servicios</span>
+                        ${fileLink(user.catalogoPDF)}
+                    </div>
+                    <div class="doc-item">
+                        <span class="doc-label">Necesidades de la Empresa</span>
+                        ${fileLink(user.necesidadesPDF)}
+                    </div>
+                </div>
+
+                <!-- Acciones rápidas -->
+                <div class="section-title">
+                    <h3>⚡ Acciones Rápidas</h3>
+                </div>
+                
+                <div class="action-buttons" style="border-top: none; padding-top: 0;">
+                    <a href="matches.html" class="btn btn-primary">
+                        🤝 Ver Oportunidades
+                    </a>
+                    <a href="agenda.html" class="btn btn-secondary">
+                        📅 Ver Mi Agenda
+                    </a>
+                </div>
+            `;
+        }
+
+        function formatRole(role) {
+            const roles = {
+                'ofertante': '🏷️ Ofertante',
+                'demandante': '🛒 Demandante',
+                'adminEvento': '📋 Admin Evento',
+                'adminSistema': '⚙️ Admin Sistema'
+            };
+            return roles[role] || role;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>

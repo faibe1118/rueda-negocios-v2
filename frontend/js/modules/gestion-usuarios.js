@@ -30,7 +30,7 @@ async function cargarUsuarios() {
         <td>${user.role}</td>
         <td>${user.estadoRegistro}</td>
         <td>
-            <button onclick="verDetalles('${user._id}')">Ver detalles</button>
+            <button class="btn btn-primary btn-block"onclick="verDetalles('${user._id}')">Ver detalles</button>
         </td>
         `;
             tbody.appendChild(row);
