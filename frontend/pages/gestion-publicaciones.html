@@ -3,22 +3,73 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Publicaciones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Publicaciones - Admin</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-    <h1>Gestión de Publicaciones</h1>
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="admin-dashboard.html" class="logo">EventConnect Admin</a>
+            <div class="nav-links">
+                <a href="admin-dashboard.html">Dashboard</a>
+                <a href="gestion-usuarios.html">Usuarios</a>
+                <a href="gestion-publicaciones.html" class="active">Publicaciones</a>
+                <!-- Eventos link removed as per request -->
+                <!-- <div class="user-menu"> removed as per previous user consistency -->
+            </div>
+        </div>
+    </nav>
 
-    <button onclick="volver()">⬅ Volver al panel</button>
+    <div class="container" style="padding-top: 2rem;">
+        
+        <header class="page-header">
+            <div>
+                <h1>Gestión de Publicaciones</h1>
+                <p>Aprueba o rechaza los catálogos/publicaciones subidos por los usuarios.</p>
+            </div>
+        </header>
 
-    <p>En esta sección podrás aprobar o rechazar publicaciones de eventos.</p>
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="all">Todas</button>
+                <button class="tab-btn" data-tab="pending">Pendientes</button>
+                <button class="tab-btn" data-tab="approved">Aprobados</button>
+                <button class="tab-btn" data-tab="rejected">Rechazados</button>
+            </div>
+        </div>
 
-    <script>
-        function volver() {
-            window.location.href = "./admin-dashboard.html";
-        }
-    </script>
+        <!-- Cards Grid -->
+        <div id="events-grid" class="events-grid">
+            <!-- Cards will be injected by JS -->
+        </div>
+
+    </div>
+
+    <!-- Modal Detalle Publicación -->
+    <div id="event-modal" class="modal">
+        <div class="modal-content event-modal-content">
+            <div class="modal-header">
+                <h2>Detalles de la Publicación</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            
+            <div id="modal-body" class="modal-body">
+                <!-- Details injected by JS -->
+            </div>
+
+            <div class="modal-footer">
+                <button id="btn-approve" class="btn btn-success">Aprobar</button>
+                <button id="btn-reject" class="btn btn-danger">Rechazar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/gestion-publicaciones.js"></script>
 </body>
 
 </html>
